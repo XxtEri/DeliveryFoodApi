@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "g1f/WnhMImkz2rtl1imq8Nd69xTX6frNXWZwoqVb5/00q2y7yDFQaN10YySHUkk6WU+IuW3No1nipFJ9XmvfIg==",
+  "success": true,
+  "projectFilePath": "/Users/elena/Documents/My_programms/Rider/webNET-Hits-backend-aspnet-project-2/webNET-Hits-backend-aspnet-project-2/webNET-Hits-backend-aspnet-project-2.csproj",
+  "expectedPackageFiles": [
+    "/Users/elena/.nuget/packages/microsoft.extensions.apidescription.server/3.0.0/microsoft.extensions.apidescription.server.3.0.0.nupkg.sha512",
+    "/Users/elena/.nuget/packages/microsoft.openapi/1.2.3/microsoft.openapi.1.2.3.nupkg.sha512",
+    "/Users/elena/.nuget/packages/swashbuckle.aspnetcore/6.2.3/swashbuckle.aspnetcore.6.2.3.nupkg.sha512",
+    "/Users/elena/.nuget/packages/swashbuckle.aspnetcore.swagger/6.2.3/swashbuckle.aspnetcore.swagger.6.2.3.nupkg.sha512",
+    "/Users/elena/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.2.3/swashbuckle.aspnetcore.swaggergen.6.2.3.nupkg.sha512",
+    "/Users/elena/.nuget/packages/swashbuckle.aspnetcore.swaggerui/6.2.3/swashbuckle.aspnetcore.swaggerui.6.2.3.nupkg.sha512"
+  ],
+  "logs": []
+}
