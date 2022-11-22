@@ -3,17 +3,17 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace webNET_Hits_backend_aspnet_project_2.Models.DTO;
 
+public enum DishCategory
+{
+    Wok,
+    Pizza,
+    Soup,
+    Dessert,
+    Drink
+}
+
 public class DishDto
 {
-    public enum DishCategory
-    {
-        Wok,
-        Pizza,
-        Soup,
-        Dessert,
-        Drink
-    }
-    
     public Guid Id { get; set; }
     
     [NotNull]
