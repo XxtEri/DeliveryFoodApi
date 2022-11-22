@@ -1,0 +1,11 @@
+version: '3.3'
+
+services:
+  database:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: hits-delivery-food
+      POSTGRES_USER: elena
+      POSTGRES_PASSWORD: asd123
