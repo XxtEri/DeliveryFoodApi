@@ -14,6 +14,7 @@ public enum DishCategory
 
 public class DishDto
 {
+    [Key]
     public Guid Id { get; set; }
     
     [NotNull]

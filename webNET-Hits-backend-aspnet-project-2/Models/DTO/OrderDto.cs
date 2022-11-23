@@ -11,6 +11,7 @@ public enum OrderStatus
 
 public class OrderDto
 {
+    [Key]
     public Guid Id { get; set; }
     
     [NotNull]
