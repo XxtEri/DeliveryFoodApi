@@ -12,7 +12,7 @@ public class BasketController: ControllerBase
 {
     private readonly ApplicationDbContext _context;
 
-    private BasketController(ApplicationDbContext context)
+    public BasketController(ApplicationDbContext context)
     {
         _context = context;
     }
