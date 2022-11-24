@@ -1,12 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using webNET_Hits_backend_aspnet_project_2.Models;
-using webNET_Hits_backend_aspnet_project_2.Models.DTO;
 
 namespace webNET_Hits_backend_aspnet_project_2.Controllers;
 
 [ApiController]
-[Route("api/")]
+[Route("api/basket")]
 
 public class BasketController: ControllerBase
 {
@@ -17,15 +15,21 @@ public class BasketController: ControllerBase
         _context = context;
     }
     
-    [HttpGet("basket")]
-    public String Get()
+    [HttpGet]
+    public String GetDishesInBasket()
     {
         return "Bla";
     }
 
-    // [HttpPost]
-    // public Task<IActionResult> Post(DishBasketDto model)
-    // {
-    //     return Ok();
-    // }
+    [HttpPost("dish/{dishId}")]
+    public String AddDishToBasket(Guid dishId)
+    {
+        return "Ok";
+    }
+
+    [HttpDelete("dish/{dishId}")]
+    public String DeleteDishInBasket(Guid dishId, bool increase)
+    {
+        return "Ok";
+    }
 }
