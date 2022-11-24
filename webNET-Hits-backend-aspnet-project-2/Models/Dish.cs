@@ -1,19 +1,9 @@
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
+using webNET_Hits_backend_aspnet_project_2.Enums;
 
 namespace webNET_Hits_backend_aspnet_project_2.Models;
 
 public class Dish
 {
-    public enum DishCategory
-    {
-        Wok,
-        Pizza,
-        Soup,
-        Dessert,
-        Drink
-    }
-    
     public Guid Id { get; set; }
     
     public string Name { get; set; }
