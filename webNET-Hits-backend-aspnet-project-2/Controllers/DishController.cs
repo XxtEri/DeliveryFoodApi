@@ -23,9 +23,9 @@ public class DishController
     }
 
     [HttpGet("{id}")]
-    public string GetInformationConcreteDish(Guid id)
+    public DishDto GetInformationConcreteDish(Guid id)
     {
-        return id.ToString();
+        return _dishService.GetInformationAboutDish(id);
     }
 
 
