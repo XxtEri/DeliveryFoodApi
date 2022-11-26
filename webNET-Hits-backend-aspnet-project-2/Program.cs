@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using webNET_Hits_backend_aspnet_project_2.Models;
+using webNET_Hits_backend_aspnet_project_2.Servises;
+using webNET_Hits_backend_aspnet_project_2.Servises.InterfacesServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,8 @@ builder.Services.AddSwaggerGen();
 
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connection));
+
+builder.Services.AddScoped<IDishService, DishService>();
 
 var app = builder.Build();
 

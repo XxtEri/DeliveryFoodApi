@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using webNET_Hits_backend_aspnet_project_2.Enums;
-using webNET_Hits_backend_aspnet_project_2.Models;
+using webNET_Hits_backend_aspnet_project_2.Models.DTO;
+using webNET_Hits_backend_aspnet_project_2.Servises.InterfacesServices;
 
 namespace webNET_Hits_backend_aspnet_project_2.Controllers;
 
@@ -8,17 +9,17 @@ namespace webNET_Hits_backend_aspnet_project_2.Controllers;
 [Route("api/dish")]
 public class DishController
 {
-    private ApplicationDbContext _context;
+    private readonly IDishService _dishService;
 
-    public DishController(ApplicationDbContext context)
+    public DishController(IDishService dishService)
     {
-        _context = context;
+        _dishService = dishService;
     }
 
     [HttpGet]
-    public String GetListDishes([FromQuery] List<DishCategory> categories, bool vegetarian, SortingDish sorting, int page)
+    public IEnumerable<DishDto> GetListDishes([FromQuery] List<DishCategory> categories, bool vegetarian, SortingDish sorting, int page)
     {
-        return page.ToString();
+        return _dishService.GenerateDishes();
     }
 
     [HttpGet("{id}")]
