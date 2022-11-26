@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace webNET_Hits_backend_aspnet_project_2.Models.DTO;
 
-public class OrderCreateDto
+public class OrderCreate
 {
     [Required]
     [DataType(DataType.DateTime)]

@@ -1,35 +1,31 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using webNET_Hits_backend_aspnet_project_2.Enums;
 
 namespace webNET_Hits_backend_aspnet_project_2.Models.DTO;
 
-public enum OrderStatus
-{
-    InProcess,
-    Delivered
-}
-
 public class OrderDto
 {
-    [Key]
     public Guid Id { get; set; }
     
-    [NotNull]
-    public DateTime DeliveryTime { get; set; }
+    [DataType(DataType.DateTime)]
+    [Required]
+    public string DeliveryTime { get; set; }
     
-    [NotNull]
-    public DateTime OrderTime { get; set; }
+    [DataType(DataType.DateTime)]
+    [Required]
+    public string OrderTime { get; set; }
     
-    [NotNull]
+    [Required]
     public OrderStatus Status { get; set; }
     
-    [NotNull]
-    public int Price { get; set; }
+    [Required]
+    public double Price { get; set; }
     
-    [NotNull]
-    public DishBasket dishes { get; set; }
+    [MaybeNull]
+    public DishBasketDto Dishes { get; set; }
     
-    [NotNull]
+    [Required]
     [MinLength(1)]
     public string Address { get; set; }
 }

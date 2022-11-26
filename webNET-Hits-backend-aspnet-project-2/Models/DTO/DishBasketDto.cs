@@ -1,27 +1,25 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.AspNetCore.Mvc;
 
 namespace webNET_Hits_backend_aspnet_project_2.Models.DTO;
 
 public class DishBasketDto
 {
-    [Key]
     public Guid Id { get; set; }
     
-    [NotNull]
+    [Required]
     [MinLength(1)]
     public string Name { get; set; }
     
-    [NotNull]
+    [Required]
     public double Price { get; set; }
     
-    [NotNull]
+    [Required]
     public double TotalPrice { get; set; }
     
-    [NotNull]
+    [Required]
     public int Amount { get; set; }
-
+    
     [MaybeNull]
-    public string? Image { get; set; }
+    public string Image { get; set; }
 }
