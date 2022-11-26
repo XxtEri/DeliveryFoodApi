@@ -19,9 +19,27 @@ public class UserController
     }
 
     [HttpPost("register")]
-    public string Register()
+    public async Task<IActionResult> Register([FromBody] UserRegisterModel model)
     {
-        return "Ok";
+        await _userService.AddUser(model);
+        
+        var now = DateTime.UtcNow;
+        //создаем JWT токен
+        var jwt = new JwtSecurityToken(
+            issuer: JwtConfigurations.Issuer,
+            audience: JwtConfigurations.Audience,
+            notBefore: now,
+            expires: now.AddMinutes(JwtConfigurations.Lifetime),
+            signingCredentials: new SigningCredentials(JwtConfigurations.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+
+        var encodeJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+
+        var response = new
+        {
+            token = encodeJwt
+        };
+
+        return new JsonResult(response);
     }
     
     [HttpPost("login")]

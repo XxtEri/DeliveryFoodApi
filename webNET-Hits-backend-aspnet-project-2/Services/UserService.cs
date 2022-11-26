@@ -12,15 +12,10 @@ public class UserService: IUserService
     {
         _context = context;
     }
-    
-    private readonly List<LoginCredentials> _users = new List<LoginCredentials>
-    {
-        new LoginCredentials { Email = "admin@example.com", Password = "pass"}
-    };
 
     public async Task<ClaimsIdentity> GetIdentity(string email, string password)
     {
-        var user = _users.FirstOrDefault(x => x.Email == email && x.Password == password);
+        var user = _context.Users.FirstOrDefault(x => x.Email == email && x.Password == password);
         if (user != null)
         {
             var claims = new List<Claim>
@@ -36,5 +31,21 @@ public class UserService: IUserService
         }
     
         return null;
+    }
+
+    public async Task AddUser(UserRegisterModel model)
+    {
+        await _context.Users.AddAsync(new User
+        {
+            FullName = model.FullName,
+            Password = model.Password,
+            Email = model.Email,
+            Address = model.Address,
+            BirthDate = model.BirthDate,
+            Gender = model.Gender,
+            PhoneNumber = model.PhoneNumber
+        });
+
+        await _context.SaveChangesAsync();
     }
 }
