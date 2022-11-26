@@ -1,10 +1,8 @@
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 
-namespace webNET_Hits_backend_aspnet_project_2.Models.DTO;
+namespace webNET_Hits_backend_aspnet_project_2.Models;
 
-public class LoginCredentialsDto
+public class LoginCredentials
 {
     [EmailAddress]
     [MinLength(1)]
