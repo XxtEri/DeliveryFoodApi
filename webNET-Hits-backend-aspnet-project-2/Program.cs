@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using webNET_Hits_backend_aspnet_project_2.JWT;
 using webNET_Hits_backend_aspnet_project_2.Models;
 using webNET_Hits_backend_aspnet_project_2.Servises;
@@ -16,8 +17,6 @@ builder.Services.AddSwaggerGen();
 
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connection));
-
-builder.Services.AddScoped<IDishService, DishService>();
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -41,6 +40,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true
         };
     });
+
+builder.Services.AddScoped<IDishService, DishService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
