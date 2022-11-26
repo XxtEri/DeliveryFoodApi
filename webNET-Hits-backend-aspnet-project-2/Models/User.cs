@@ -27,6 +27,9 @@ public class User
     [MaybeNull]
     public string Email { get; set; }
     
+    [MinLength(1)]
+    public string Password { get; set; }
+    
     [Phone]
     [MaybeNull]
     public string PhoneNumber { get; set; }
