@@ -13,29 +13,14 @@ public class DishService: IDishService
     {
         "Potato", "Chicken", "Fish"
     };
-    
-    private Dish[] _tmp;
 
     public DishService(ApplicationDbContext context)
     {
         _context = context;
-    }
-
-    public async Task GenerateTMP()
-    {
-        var tmpModel = new DishDto
+        if (!_context.Dishes.Any())
         {
-            Name = Dishes[Random.Shared.Next(Dishes.Length)],
-            Price = Random.Shared.Next(10, 1000),
-            Image =
-                "https://www.google.com/url?sa=i&url=https%3A%2F%2Frecepty.7dach.ru%2Flublu_gotovit%2Fchto-prigotovit-na-vtoroe-10-receptov-v-pomosch-hozyayke-167444.html&psig=AOvVaw1DNOnqzH8dXNfVkpdgLmG5&ust=1669462653478000&source=images&cd=vfe&ved=0CBAQjRxqFwoTCPCJqpWfyfsCFQAAAAAdAAAAABAE",
-            Vegetarian = false,
-            Rating = Random.Shared.Next(1, 10),
-            Category = DishCategory.Dessert
-        };
-
-        await Add(tmpModel);
-        return;
+            AddDishes();
+        }
     }
 
     public DishDto[] GenerateDishes()
@@ -43,24 +28,37 @@ public class DishService: IDishService
         return _context.Dishes.Select(x => new DishDto
         {
             Name = x.Name,
+            Description = x.Description,
             Price = x.Price,
             Image = x.Image,
             Vegetarian = x.Vegetarian,
             Rating = x.Rating,
-            Category = x.Category
+            Category = x.Category,
+            Id = x.Id
         }).ToArray();
     }
 
-    public async Task Add(DishDto model)
+    public async void AddDishes()
     {
-        await _context.Dishes.AddAsync(new Dish
+        _context.Dishes.Add(new Dish
         {
-            Name = model.Name,
-            Price = model.Price,
-            Image = model.Image,
-            Vegetarian = model.Vegetarian,
-            Rating = model.Rating,
-            Category = model.Category
+            Name = "4 сыра",
+            Description = "4 сыра: «Моцарелла», «Гауда», «Фета», «Дор-блю», сливочно-сырный соус, пряные травы",
+            Price = 360,
+            Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",
+            Vegetarian = true,
+            Rating = 3.5,
+            Category = DishCategory.Pizza
+        });
+        _context.Dishes.Add(new Dish
+        {
+            Name = "Party BBQ",
+            Description = "Бекон, соленый огурчик, брусника, сыр «Моцарелла», сыр «Гауда», соус BBQ",
+            Price = 480,
+            Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",
+            Vegetarian = false,
+            Rating = null,
+            Category = DishCategory.Pizza
         });
 
         await _context.SaveChangesAsync();

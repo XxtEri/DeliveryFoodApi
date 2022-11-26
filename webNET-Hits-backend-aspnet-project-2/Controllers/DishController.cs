@@ -23,14 +23,14 @@ public class DishController
     }
 
     [HttpGet("{id}")]
-    public String GetInformationConcreteDish(Guid id)
+    public string GetInformationConcreteDish(Guid id)
     {
         return id.ToString();
     }
 
 
     [HttpGet("{id}/rating/check")]
-    public String CheckCurrentUserSetRating(int id)
+    public string CheckCurrentUserSetRating(int id)
     {
         return id.ToString();
     }

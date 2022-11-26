@@ -24,7 +24,7 @@ public class DishDto
     public bool Vegetarian { get; set; }
     
     [MaybeNull]
-    public double Rating { get; set; }
+    public double? Rating { get; set; }
     
     public DishCategory Category { get; set; }
 }

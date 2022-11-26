@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using webNET_Hits_backend_aspnet_project_2.Models.DTO;
+using webNET_Hits_backend_aspnet_project_2.Models;
 using webNET_Hits_backend_aspnet_project_2.Servises.InterfacesServices;
 
 namespace webNET_Hits_backend_aspnet_project_2.Controllers;
@@ -22,7 +22,7 @@ public class UserController
     }
     
     [HttpPost("login")]
-    public async Task<ActionResult<LoginCredentialsDto>> Login(LoginCredentialsDto model)
+    public async Task<ActionResult<LoginCredentials>> Login(LoginCredentials model)
     {
         await _userService.Login(model);
         return model;
