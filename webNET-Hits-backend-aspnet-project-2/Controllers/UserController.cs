@@ -9,16 +9,25 @@ namespace webNET_Hits_backend_aspnet_project_2.Controllers;
 
 [ApiController]
 [Route("api/account")]
+[Produces("application/json")]
 public class UserController
 {
-    private IUserService _userService;
+    private readonly IUserService _userService;
 
     public UserController(IUserService userService)
     {
         _userService = userService;
     }
 
+    /// <summary>
+    /// Register new user
+    /// </summary>
+    /// <param name="request">register request</param>
+    /// <returns>jwt token</returns>
     [HttpPost("register")]
+    [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Register([FromBody] UserRegisterModel model)
     {
         await _userService.AddUser(model);
@@ -42,7 +51,15 @@ public class UserController
         return new JsonResult(response);
     }
     
+    /// <summary>
+    /// Log in to the system
+    /// </summary>
+    /// /// <param name="request">log in request</param>
+    /// <returns>jwt token</returns>
     [HttpPost("login")]
+    [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Login([FromBody] LoginCredentials model)
     {
         var identity = await _userService.GetIdentity(model.Email, model.Password);
@@ -67,19 +84,42 @@ public class UserController
         return new JsonResult(response);
     }
 
+    /// <summary>
+    /// Log out system user
+    /// </summary>
     [HttpPost("logout")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public string Logout()
     {
         return "Ok";
     }
 
+    /// <summary>
+    /// Get user profile
+    /// </summary>
     [HttpGet("profile")]
+    [ProducesResponseType(typeof(UserEditModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public string GetUserProfile()
     {
         return "user";
     }
 
+    /// <summary>
+    /// Edit user Profile
+    /// </summary>
     [HttpPut("profile")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public string EditUserProfile()
     {
         return "user";
