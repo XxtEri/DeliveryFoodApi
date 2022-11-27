@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using webNET_Hits_backend_aspnet_project_2.JWT;
@@ -22,8 +23,6 @@ public class UserController
     /// <summary>
     /// Register new user
     /// </summary>
-    /// <param name="request">register request</param>
-    /// <returns>jwt token</returns>
     [HttpPost("register")]
     [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
@@ -87,7 +86,7 @@ public class UserController
     /// <summary>
     /// Log out system user
     /// </summary>
-    [HttpPost("logout")]
+    [HttpPost("logout"), Authorize]
     [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
@@ -101,7 +100,7 @@ public class UserController
     /// <summary>
     /// Get user profile
     /// </summary>
-    [HttpGet("profile")]
+    [HttpGet("profile"), Authorize]
     [ProducesResponseType(typeof(UserEditModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
@@ -114,7 +113,7 @@ public class UserController
     /// <summary>
     /// Edit user Profile
     /// </summary>
-    [HttpPut("profile")]
+    [HttpPut("profile"), Authorize]
     [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
