@@ -62,7 +62,7 @@ public class OrderController
     /// <summary>
     /// Confirm order delivery
     /// </summary>
-    [HttpPost("/{id}/status")]
+    [HttpPost("{id}/status")]
     [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
