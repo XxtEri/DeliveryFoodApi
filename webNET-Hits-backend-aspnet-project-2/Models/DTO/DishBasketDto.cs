@@ -13,9 +13,8 @@ public class DishBasketDto
     
     [Required]
     public double Price { get; set; }
-    
-    [Required]
-    public double TotalPrice { get; set; }
+
+    [Required] public double TotalPrice => Amount * Price;
     
     [Required]
     public int Amount { get; set; }

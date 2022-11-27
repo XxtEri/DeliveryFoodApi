@@ -16,7 +16,7 @@ public class DishBasket
     public double Price { get; set; }
     
     [Required]
-    public double TotalPrice { get; set; }
+    public double TotalPrice => Amount * Price;
     
     [Required]
     public int Amount { get; set; }

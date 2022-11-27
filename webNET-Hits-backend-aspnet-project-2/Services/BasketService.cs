@@ -1,9 +1,10 @@
 using webNET_Hits_backend_aspnet_project_2.Models;
 using webNET_Hits_backend_aspnet_project_2.Models.DTO;
+using webNET_Hits_backend_aspnet_project_2.Servises.InterfacesServices;
 
 namespace webNET_Hits_backend_aspnet_project_2.Servises;
 
-public class BasketService
+public class BasketService: IBasketService
 {
     private readonly ApplicationDbContext _context;
 
@@ -12,29 +13,49 @@ public class BasketService
         _context = context;
     }
 
-    public async Task GetBasketDishes()
+    public DishBasketDto[] GetBasketDishes()
     {
-        var tmpModel = new DishBasketDto()
+        return _context.DishBaskets.Select(x => new DishBasketDto
         {
-            Amount = Random.Shared.Next(1, 1000),
-            Name = "Name",
-            Price = Random.Shared.Next(1, 100),
-            TotalPrice = Random.Shared.Next(1, 1000)
-        };
-
-        await Add(tmpModel);
+            Id = x.Id,
+            Name = x.Name,
+            Price = x.Price,
+            Amount = x.Amount,
+            Image = x.Image
+        }).ToArray();
     }
 
-    private async Task Add(DishBasketDto model)
+    public async Task<DishBasketDto> AddDishInBasket(Guid id)
     {
-        await _context.DishBaskets.AddAsync(new DishBasket
+        var model = _context.Dishes.Find(id);
+        var dishBasket = _context.DishBaskets.Find(id);
+        
+        if (dishBasket!= null)
         {
-            Amount = model.Amount,
+            dishBasket.Amount += 1;
+        } else
+        {
+            await _context.DishBaskets.AddAsync(new DishBasket
+            {
+                Id = id,
+                Name = model.Name,
+                Price = model.Price,
+                Amount = 1,
+                Image = model.Image
+            });
+            
+            await _context.SaveChangesAsync();
+        }
+
+        var dishBasketDto = new DishBasketDto
+        {
+            Id = id,
             Name = model.Name,
             Price = model.Price,
-            TotalPrice = model.TotalPrice
-        });
-
-        await _context.SaveChangesAsync();
+            Amount = dishBasket.Amount,
+            Image = model.Image
+        };
+        
+        return dishBasketDto;
     }
 }

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using webNET_Hits_backend_aspnet_project_2.Models;
 using webNET_Hits_backend_aspnet_project_2.Models.DTO;
+using webNET_Hits_backend_aspnet_project_2.Servises.InterfacesServices;
 
 namespace webNET_Hits_backend_aspnet_project_2.Controllers;
 
@@ -9,11 +10,12 @@ namespace webNET_Hits_backend_aspnet_project_2.Controllers;
 [Produces("application/json")]
 public class BasketController: ControllerBase
 {
+    private readonly IBasketService _basketService;
     private readonly ApplicationDbContext _context;
 
-    public BasketController(ApplicationDbContext context)
+    public BasketController(IBasketService basketService)
     {
-        _context = context;
+        _basketService = basketService;
     }
     
     /// <summary>
@@ -24,9 +26,9 @@ public class BasketController: ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public String GetDishesInBasket()
+    public IEnumerable<DishBasketDto> GetDishesInBasket()
     {
-        return "Bla";
+        return _basketService.GetBasketDishes();
     }
 
     /// <summary>
@@ -38,9 +40,10 @@ public class BasketController: ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public String AddDishToBasket(Guid dishId)
+    public IActionResult AddDishToBasket(Guid dishId)
     {
-        return "Ok";
+
+        return Ok(_basketService.AddDishInBasket(dishId));
     }
 
     /// <summary>
