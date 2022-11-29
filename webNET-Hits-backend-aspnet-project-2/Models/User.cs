@@ -33,7 +33,6 @@ public class User
     [Phone]
     [MaybeNull]
     public string PhoneNumber { get; set; }
-    
-    public virtual List<DishBasket> DishBaskets { get; set; }
-    public virtual List<Order> Orders { get; set; }
+
+    public ICollection<Order> Orders { get; set; }
 }

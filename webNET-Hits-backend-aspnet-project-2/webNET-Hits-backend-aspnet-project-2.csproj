@@ -10,6 +10,9 @@
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
       <DocumentationFile>bin\Debug\net6.0\webNET-Hits-backend-aspnet-project-2.xml</DocumentationFile>
       <NoWarn>1701;1702;1591</NoWarn>
+      <DefineConstants>DEBUG;TRACE</DefineConstants>
+      <OutputPath>bin\Debug\</OutputPath>
+      <Prefer32bit>true</Prefer32bit>
     </PropertyGroup>
 
     <ItemGroup>

@@ -13,4 +13,12 @@ public class ApplicationDbContext: DbContext
     {
         Database.EnsureCreated();
     }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<User>()
+            .HasMany(o => o.Orders)
+            .WithOne().HasForeignKey(d => d.UserId).IsRequired();
+
+    }
 }
