@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
 namespace webNET_Hits_backend_aspnet_project_2.Models;
@@ -23,4 +24,10 @@ public class DishBasket
     
     [MaybeNull]
     public string Image { get; set; }
+    
+    [ForeignKey("User")]
+    public int UserId { get; set; }
+    
+    [Required]
+    public User User { get; set; }
 }
