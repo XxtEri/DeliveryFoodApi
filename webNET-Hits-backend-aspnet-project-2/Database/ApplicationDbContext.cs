@@ -7,9 +7,16 @@ public class ApplicationDbContext: DbContext
 {
     public DbSet<DishBasketDto> DishBaskets { get; set; }
     public DbSet<DishDto> Dishes { get; set; }
+    public DbSet<User> Users { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options)
     {
         Database.EnsureCreated();
     }
+    
+    // protected override void OnModelCreating(ModelBuilder modelBuilder)
+    // {
+    //     modelBuilder.Entity<User>().HasKey(x => x.Id);
+    // }
+
 }

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using webNET_Hits_backend_aspnet_project_2.Enums;
 using webNET_Hits_backend_aspnet_project_2.Models.DTO;
@@ -30,4 +31,10 @@ public class Order
     [Required]
     [MinLength(1)]
     public string Address { get; set; }
+    
+    [ForeignKey("User")]
+    public int UserId { get; set; }
+    
+    [Required]
+    public User User { get; set; }
 }
