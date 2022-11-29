@@ -23,4 +23,8 @@ public class DishBasket
     
     [MaybeNull]
     public string Image { get; set; }
+    
+    public User User { get; set; }
+    
+    public List<Dish> Dishes { get; set; }
 }

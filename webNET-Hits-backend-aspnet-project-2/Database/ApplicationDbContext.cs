@@ -17,8 +17,7 @@ public class ApplicationDbContext: DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>()
-            .HasMany(o => o.Orders)
-            .WithOne().HasForeignKey(d => d.UserId).IsRequired();
-
+            .HasOne(o => o.DishBasket)
+            .WithOne().HasForeignKey<User>().IsRequired();
     }
 }

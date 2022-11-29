@@ -34,5 +34,5 @@ public class User
     [MaybeNull]
     public string PhoneNumber { get; set; }
 
-    public ICollection<Order> Orders { get; set; }
+    public DishBasket DishBasket { get; set; }
 }

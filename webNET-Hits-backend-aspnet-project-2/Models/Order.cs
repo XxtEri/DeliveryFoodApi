@@ -30,6 +30,4 @@ public class Order
     [Required]
     [MinLength(1)]
     public string Address { get; set; }
-    
-    public int UserId { get; set; }
 }
