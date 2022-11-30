@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using webNET_Hits_backend_aspnet_project_2.Enums;
-using webNET_Hits_backend_aspnet_project_2.Models.DTO;
 
 namespace webNET_Hits_backend_aspnet_project_2.Models;
 
@@ -9,6 +8,9 @@ public class Order
 {
     [Key]
     public Guid Id { get; set; }
+    
+    // [ForeignKey("User")]
+    // public Guid UserId { get; set; }
     
     [DataType(DataType.DateTime)]
     [Required]
@@ -25,9 +27,11 @@ public class Order
     public double Price { get; set; }
     
     [MaybeNull]
-    public DishBasketDto Dishes { get; set; }
+    public DishBasket Dishes { get; set; }
     
     [Required]
     [MinLength(1)]
     public string Address { get; set; }
+    
+    // public User User { get; set; }
 }

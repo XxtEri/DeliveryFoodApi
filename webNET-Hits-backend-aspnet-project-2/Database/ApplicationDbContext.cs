@@ -4,10 +4,10 @@ namespace webNET_Hits_backend_aspnet_project_2.Models;
 
 public class ApplicationDbContext: DbContext
 {
+    public DbSet<User> Users { get; set; }
     public DbSet<DishBasket> DishBaskets { get; set; }
     public DbSet<Dish> Dishes { get; set; }
-    public DbSet<Response> Responses { get; set; }
-    public DbSet<User> Users { get; set; }
+    public DbSet<Order> Orders { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options)
     {
@@ -16,8 +16,8 @@ public class ApplicationDbContext: DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>()
-            .HasOne(o => o.DishBasket)
-            .WithOne().HasForeignKey<User>().IsRequired();
+        modelBuilder.Entity<DishBasket>()
+            .HasOne(p => p.User)
+            .WithOne(c => c.DishBasket);
     }
 }
