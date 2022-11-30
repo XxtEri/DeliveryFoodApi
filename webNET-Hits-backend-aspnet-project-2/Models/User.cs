@@ -35,4 +35,6 @@ public class User
     public string PhoneNumber { get; set; }
 
     public DishBasket DishBasket { get; set; }
+    
+    public List<Order> Order { get; set; }
 }

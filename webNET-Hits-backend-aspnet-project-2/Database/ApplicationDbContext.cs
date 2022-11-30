@@ -19,5 +19,16 @@ public class ApplicationDbContext: DbContext
         modelBuilder.Entity<DishBasket>()
             .HasOne(p => p.User)
             .WithOne(c => c.DishBasket);
+        
+        modelBuilder.Entity<Order>()
+            .HasOne(p => p.User)
+            .WithMany(c => c.Order);
+
+        modelBuilder.Entity<DishBasket>()
+            .HasOne(p => p.Order)
+            .WithMany(o => o.Dishes);
+
+        modelBuilder.Entity<DishBasket>()
+            .HasOne(p => p.Dish);
     }
 }

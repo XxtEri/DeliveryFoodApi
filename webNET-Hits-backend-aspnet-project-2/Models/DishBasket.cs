@@ -7,6 +7,7 @@ namespace webNET_Hits_backend_aspnet_project_2.Models;
 public class DishBasket
 {
     [Key]
+    [ForeignKey("Dish")]
     public Guid Id { get; set; }
     
     [ForeignKey("User")]
@@ -30,4 +31,8 @@ public class DishBasket
     
     [Required]
     public User User { get; set; }
+    
+    public Dish Dish { get; set; }
+    
+    public Order Order { get; set; }
 }

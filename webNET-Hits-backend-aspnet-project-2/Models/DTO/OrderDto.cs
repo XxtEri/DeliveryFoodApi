@@ -23,7 +23,7 @@ public class OrderDto
     public double Price { get; set; }
     
     [MaybeNull]
-    public DishBasketDto Dishes { get; set; }
+    public List<DishBasketDto> Dishes { get; set; }
     
     [Required]
     [MinLength(1)]
