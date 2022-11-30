@@ -61,26 +61,19 @@ public class UserController
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Login([FromBody] LoginCredentials model)
     {
-        var identity = await _userService.GetIdentity(model.Email, model.Password);
+        var token = _userService.LogInUser(model);
 
-        var now = DateTime.UtcNow;
-        //создаем JWT токен
-        var jwt = new JwtSecurityToken(
-            issuer: JwtConfigurations.Issuer,
-            audience: JwtConfigurations.Audience,
-            notBefore: now,
-            claims: identity.Claims,
-            expires: now.AddMinutes(JwtConfigurations.Lifetime),
-            signingCredentials: new SigningCredentials(JwtConfigurations.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
-
-        var encodeJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-
-        var response = new
+        //TODO: не работает проверка if
+        if (token.Result == new JsonResult(null))
         {
-            token = encodeJwt
-        };
-
-        return new JsonResult(response);
+            return new BadRequestObjectResult(new Response
+            {
+                Status = "400",
+                Message = "Login or password Failed"
+            });
+        }
+        
+        return token.Result;
     }
 
     /// <summary>
