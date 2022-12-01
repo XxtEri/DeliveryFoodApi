@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using webNET_Hits_backend_aspnet_project_2.JWT;
 using webNET_Hits_backend_aspnet_project_2.Models;
@@ -17,13 +16,16 @@ public class UserService: IUserService
         _context = context;
     }
 
-    public async Task<IActionResult> LogInUser(LoginCredentials model)
+    public async Task<TokenResponse> LogInUser(LoginCredentials model)
     {
         var identity = await GetIdentity(model.Email, model.Password);
 
         if (identity == null)
         {
-            return new JsonResult(null);
+            return new TokenResponse
+            {
+                Token = null
+            };
         }
         
         var now = DateTime.UtcNow;
@@ -43,7 +45,7 @@ public class UserService: IUserService
             Token = encodeJwt
         };
 
-        return new JsonResult(token);
+        return token;
     }
 
     private async Task<ClaimsIdentity?> GetIdentity(string email, string password)

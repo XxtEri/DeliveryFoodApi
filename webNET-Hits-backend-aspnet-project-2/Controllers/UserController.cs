@@ -61,10 +61,10 @@ public class UserController
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Login([FromBody] LoginCredentials model)
     {
-        var token = _userService.LogInUser(model);
+        var token = await _userService.LogInUser(model);
 
-        //TODO: не работает проверка if
-        if (token.Result == new JsonResult(null))
+       
+        if (token.Token == null)
         {
             return new BadRequestObjectResult(new Response
             {
@@ -73,13 +73,14 @@ public class UserController
             });
         }
         
-        return token.Result;
+        return new JsonResult(token);
     }
 
     /// <summary>
     /// Log out system user
     /// </summary>
-    [HttpPost("logout"), Authorize]
+    [HttpPost("logout")]
+    [Authorize]
     [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
@@ -87,13 +88,13 @@ public class UserController
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public string Logout()
     {
-        return "Ok";
+        return "ok";
     }
 
     /// <summary>
     /// Get user profile
     /// </summary>
-    [HttpGet("profile"), Authorize]
+    [HttpGet("profile")]
     [ProducesResponseType(typeof(UserEditModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
@@ -106,7 +107,8 @@ public class UserController
     /// <summary>
     /// Edit user Profile
     /// </summary>
-    [HttpPut("profile"), Authorize]
+    [HttpPut("profile")]
+    [Authorize]
     [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]

@@ -18,29 +18,29 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Delivery.Кущац API", Version = "v1"});
     
-    // c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    // {
-    //     Description = "Please enter token",
-    //     In = ParameterLocation.Header,
-    //     Type = SecuritySchemeType.Http,
-    //     BearerFormat = "JWT",
-    //     Scheme = "Bearer"
-    // });
-    //
-    // c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-    // {
-    //     {
-    //         new OpenApiSecurityScheme
-    //         {
-    //             Reference = new OpenApiReference
-    //             {
-    //                 Type = ReferenceType.SecurityScheme,
-    //                 Id = "Bearer"
-    //             },
-    //         },
-    //         new List<string>()
-    //     }
-    // });
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter token",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    });
+    
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+            },
+            new List<string>()
+        }
+    });
     
     var filePath = Path.Combine(System.AppContext.BaseDirectory, "webNET-Hits-backend-aspnet-project-2.xml");
     c.IncludeXmlComments(filePath);
@@ -49,8 +49,11 @@ builder.Services.AddSwaggerGen(c =>
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connection));
 
-builder.Services.AddAuthorization();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -68,9 +71,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             //установка ключа безопасности
             IssuerSigningKey = JwtConfigurations.GetSymmetricSecurityKey(),
             //валидация ключа безопасности
-            ValidateIssuerSigningKey = true
+            ValidateIssuerSigningKey = true,
+            LifetimeValidator = ((before, expires, token, parameters) => true)
         };
-    });
+    });     
+builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<IDishService, DishService>();
 builder.Services.AddScoped<IUserService, UserService>();
