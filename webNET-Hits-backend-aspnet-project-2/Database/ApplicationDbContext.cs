@@ -18,7 +18,7 @@ public class ApplicationDbContext: DbContext
     {
         modelBuilder.Entity<DishBasket>()
             .HasOne(p => p.User)
-            .WithOne(c => c.DishBasket);
+            .WithMany(c => c.DishBasket);
         
         modelBuilder.Entity<Order>()
             .HasOne(p => p.User)

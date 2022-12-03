@@ -34,7 +34,7 @@ public class User
     [MaybeNull]
     public string PhoneNumber { get; set; }
 
-    public DishBasket DishBasket { get; set; }
+    public List<DishBasket> DishBasket { get; set; }
     
     public List<Order> Order { get; set; }
 }

@@ -57,7 +57,7 @@ public class UserService: IUserService
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email)
+                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Id.ToString())
             };
     
             var claimsIdentity =
