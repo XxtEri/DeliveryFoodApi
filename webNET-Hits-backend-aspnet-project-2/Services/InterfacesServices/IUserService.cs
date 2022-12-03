@@ -6,4 +6,5 @@ public interface IUserService
 {
     Task<TokenResponse> LogInUser(LoginCredentials model);
     Task AddUser(UserRegisterModel model);
+    Task EditProfileUser(UserEditModel model);
 }

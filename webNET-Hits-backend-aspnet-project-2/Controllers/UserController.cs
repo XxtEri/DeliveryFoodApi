@@ -11,7 +11,7 @@ namespace webNET_Hits_backend_aspnet_project_2.Controllers;
 [ApiController]
 [Route("api/account")]
 [Produces("application/json")]
-public class UserController
+public class UserController: ControllerBase
 {
     private readonly IUserService _userService;
 
@@ -66,7 +66,7 @@ public class UserController
        
         if (token.Token == null)
         {
-            return new BadRequestObjectResult(new Response
+            return BadRequest(new Response
             {
                 Status = "400",
                 Message = "Login or password Failed"
@@ -89,6 +89,7 @@ public class UserController
     public string Logout()
     {
         return "ok";
+        //добавить токен в базу данных действующих, но неиспользуемых токенов
     }
 
     /// <summary>
@@ -99,9 +100,9 @@ public class UserController
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public string GetUserProfile()
+    public IActionResult GetUserProfile()
     {
-        return "user";
+        return Ok(User.Identity?.Name);
     }
 
     /// <summary>
@@ -114,8 +115,8 @@ public class UserController
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public string EditUserProfile()
+    public IActionResult EditUserProfile([FromBody] UserEditModel model)
     {
-        return "user";
+        return Ok(_userService.EditProfileUser(model));
     }
 }

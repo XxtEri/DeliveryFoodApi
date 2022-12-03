@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using webNET_Hits_backend_aspnet_project_2.JWT;
 using webNET_Hits_backend_aspnet_project_2.Models;
@@ -84,12 +85,20 @@ public class UserService: IUserService
 
         await _context.SaveChangesAsync();
     }
+    
+    public async Task EditProfileUser(UserEditModel model)
+    {
+        var newModel = new User()
+        {
+            FullName = model.FullName,
+            BirthDate = model.BirthDate,
+            Gender = model.Gender,
+            Address = model.Address,
+            PhoneNumber = model.PhoneNumber
+        };
+        
+        _context.Users.Entry(newModel).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
 
-    // public IActionResult LogOut()
-    // {
-    //     await Response
-    //     {
-    //         
-    //     }
-    // }
+    }
 }
