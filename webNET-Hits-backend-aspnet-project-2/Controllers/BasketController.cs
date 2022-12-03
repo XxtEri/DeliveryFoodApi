@@ -28,7 +28,9 @@ public class BasketController: ControllerBase
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public IEnumerable<DishBasketDto> GetDishesInBasket()
     {
-        return _basketService.GetBasketDishes();
+        Guid idUser = Guid.Parse(User.Identity!.Name!);
+        
+        return _basketService.GetBasketDishes(idUser);
     }
 
     /// <summary>

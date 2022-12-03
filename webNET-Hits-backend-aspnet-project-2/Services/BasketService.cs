@@ -13,9 +13,11 @@ public class BasketService: IBasketService
         _context = context;
     }
 
-    public DishBasketDto[] GetBasketDishes()
+    public DishBasketDto[] GetBasketDishes(Guid id)
     {
-        return _context.DishBaskets.Select(x => new DishBasketDto
+        var user = _context.DishBaskets.Find(id);
+        
+        return _context.DishBaskets.Where(x => x.UserId == id).Select(x => new DishBasketDto
         {
             Id = x.Id,
             Name = x.Name,
@@ -41,7 +43,7 @@ public class BasketService: IBasketService
                 Name = model.Name,
                 Price = model.Price,
                 Amount = 1,
-                Image = model.Image
+                Image = model.Image,
             });
             
             await _context.SaveChangesAsync();
