@@ -9,7 +9,7 @@ namespace webNET_Hits_backend_aspnet_project_2.Controllers;
 [ApiController]
 [Route("api/dish")]
 [Produces("application/json")]
-public class DishController
+public class DishController: ControllerBase
 {
     private readonly IDishService _dishService;
 

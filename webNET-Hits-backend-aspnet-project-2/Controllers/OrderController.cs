@@ -7,7 +7,7 @@ namespace webNET_Hits_backend_aspnet_project_2.Controllers;
 [ApiController]
 [Route("api/order")]
 [Produces("application/json")]
-public class OrderController
+public class OrderController: ControllerBase
 {
     private readonly ApplicationDbContext _context;
 
