@@ -18,16 +18,20 @@ public class AuthOperationFilter: IOperationFilter
             operation.Responses.TryAdd("401", new OpenApiResponse { Description = "Unauthorized" });
             operation.Responses.TryAdd("403", new OpenApiResponse { Description = "Forbidden" });
          
-            var jwtbearerScheme = new OpenApiSecurityScheme
+            var jwtBearerScheme = new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "bearerAuth" }
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme, 
+                    Id = "Bearer"
+                },
             };
          
             operation.Security = new List<OpenApiSecurityRequirement>
             {
                 new OpenApiSecurityRequirement
                 {
-                    [ jwtbearerScheme ] = new string [] { }
+                    [ jwtBearerScheme ] = new List<string>()
                 }
             };
         }
