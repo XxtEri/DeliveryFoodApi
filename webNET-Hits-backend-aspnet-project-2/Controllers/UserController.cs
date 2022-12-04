@@ -1,8 +1,5 @@
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using webNET_Hits_backend_aspnet_project_2.JWT;
 using webNET_Hits_backend_aspnet_project_2.Models;
 using webNET_Hits_backend_aspnet_project_2.Servises.InterfacesServices;
 
@@ -29,25 +26,19 @@ public class UserController: ControllerBase
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Register([FromBody] UserRegisterModel model)
     {
-        await _userService.AddUser(model);
-        
-        var now = DateTime.UtcNow;
-        //создаем JWT токен
-        var jwt = new JwtSecurityToken(
-            issuer: JwtConfigurations.Issuer,
-            audience: JwtConfigurations.Audience,
-            notBefore: now,
-            expires: now.AddMinutes(JwtConfigurations.Lifetime),
-            signingCredentials: new SigningCredentials(JwtConfigurations.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
-
-        var encodeJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-
-        var response = new
+        if (!ModelState.IsValid)
         {
-            token = encodeJwt
-        };
+            return BadRequest();
+        }
 
-        return new JsonResult(response);
+        var token = _userService.RegisterUser(model).Result;
+        
+        if (token == null)
+        {
+            return BadRequest($"Username {model.Email} is already taken.");
+        }
+
+        return Ok(token);
     }
     
     /// <summary>
@@ -67,7 +58,7 @@ public class UserController: ControllerBase
         {
             return BadRequest(new Response
             {
-                Status = "400",
+                Status = "Error",
                 Message = "Login or password Failed"
             });
         }
@@ -95,13 +86,14 @@ public class UserController: ControllerBase
     /// Get user profile
     /// </summary>
     [HttpGet("profile")]
+    [Authorize]
     [ProducesResponseType(typeof(UserEditModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public IActionResult GetUserProfile()
+    public string GetUserProfile()
     {
-        return Ok(User.Identity?.Name);
+        return $"{User.Identity!.Name}";
     }
 
     /// <summary>

@@ -17,6 +17,31 @@ public class UserService: IUserService
         _context = context;
     }
 
+    public async Task<TokenResponse?> RegisterUser(UserRegisterModel model)
+    {
+        var identity = await GetIdentity(model.Email, model.Password);
+
+        if (identity != null)
+        {
+            return null;
+        }
+        
+        await AddUser(model);
+        
+        var modelLog = new LoginCredentials
+        {
+            Email = model.Email,
+            Password = model.Password
+        };
+
+        var token = new TokenResponse
+        {
+            Token = GetEncodeJwtToken(identity)
+        };
+
+        return token;
+    }
+
     public async Task<TokenResponse> LogInUser(LoginCredentials model)
     {
         var identity = await GetIdentity(model.Email, model.Password);
@@ -28,25 +53,28 @@ public class UserService: IUserService
                 Token = null
             };
         }
-        
+
+        var token = new TokenResponse
+        {
+            Token = GetEncodeJwtToken(identity)
+        };
+
+        return token;
+    }
+
+    private string GetEncodeJwtToken(ClaimsIdentity? identity)
+    {
         var now = DateTime.UtcNow;
         //создаем JWT токен
         var jwt = new JwtSecurityToken(
             issuer: JwtConfigurations.Issuer,
             audience: JwtConfigurations.Audience,
             notBefore: now,
-            claims: identity.Claims,
+            claims: identity?.Claims,
             expires: now.AddMinutes(JwtConfigurations.Lifetime),
             signingCredentials: new SigningCredentials(JwtConfigurations.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
 
-        var encodeJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-
-        var token = new TokenResponse
-        {
-            Token = encodeJwt
-        };
-
-        return token;
+        return new JwtSecurityTokenHandler().WriteToken(jwt);
     }
 
     private async Task<ClaimsIdentity?> GetIdentity(string email, string password)
