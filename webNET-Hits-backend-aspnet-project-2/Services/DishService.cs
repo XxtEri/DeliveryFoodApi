@@ -24,31 +24,55 @@ public class DishService: IDishService
         }
     }
 
-    public List<DishDto> GetDishes(SortingDish sorting)
+    public List<DishDto> GetDishes(List<DishCategory> categories, bool vegetarian, SortingDish sorting)
     {
-        var dishes = _context.Dishes.Select(x => new DishDto
-        {
-            Name = x.Name,
-            Description = x.Description,
-            Price = x.Price,
-            Image = x.Image,
-            Vegetarian = x.Vegetarian,
-            Rating = x.Rating,
-            Category = x.Category,
-            Id = x.Id
-        });
+        var dishes = GetListDishDto(categories, vegetarian);
+        
+        dishes = SortingDishes(dishes, sorting);
+        
+        return dishes.AsNoTracking().ToList();
+    }
 
-        dishes = sorting switch
+    private IQueryable<DishDto> GetListDishDto(List<DishCategory> categories, bool vegetarian)
+    {
+        return vegetarian switch
         {
-            SortingDish.NameAsk => dishes.OrderBy(s => s.Name),
+            true => _context.Dishes.Where(x => x.Vegetarian == true && categories.Contains(x.Category)).Select(x => new DishDto
+                    { 
+                        Name = x.Name,
+                        Description = x.Description, 
+                        Price = x.Price,
+                        Image = x.Image,
+                        Vegetarian = x.Vegetarian,
+                        Rating = x.Rating,
+                        Category = x.Category,
+                        Id = x.Id
+                    }),
+            false => _context.Dishes.Where(x => categories.Contains(x.Category)).Select(x => new DishDto
+                    { 
+                        Name = x.Name,
+                        Description = x.Description, 
+                        Price = x.Price,
+                        Image = x.Image,
+                        Vegetarian = x.Vegetarian,
+                        Rating = x.Rating,
+                        Category = x.Category,
+                        Id = x.Id
+                    })
+        };
+    }
+
+    private IQueryable<DishDto> SortingDishes(IQueryable<DishDto> dishes, SortingDish sorting)
+    {
+        return sorting switch
+        {
             SortingDish.NameDesk => dishes.OrderByDescending(s => s.Name),
             SortingDish.PriceAsk => dishes.OrderBy(s => s.Price),
             SortingDish.PriceDesk => dishes.OrderByDescending(s => s.Price),
             SortingDish.RatingAsk => dishes.OrderBy(s => s.Rating),
-            SortingDish.RatingDesk => dishes.OrderByDescending(s => s.Rating)
+            SortingDish.RatingDesk => dishes.OrderByDescending(s => s.Rating),
+            _ => dishes.OrderBy(s => s.Name)
         };
-        
-        return dishes.AsNoTracking().ToList();
     }
 
     public DishDto GetInformationAboutDish(Guid id)
@@ -71,7 +95,7 @@ public class DishService: IDishService
     {
         _context.Dishes.Add(new Dish
         {
-            Name = "A сыра",
+            Name = "A4 сыра",
             Description = "4 сыра: «Моцарелла», «Гауда», «Фета», «Дор-блю», сливочно-сырный соус, пряные травы",
             Price = 360,
             Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",

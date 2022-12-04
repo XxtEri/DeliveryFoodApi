@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Microsoft.AspNetCore.Mvc;
 using webNET_Hits_backend_aspnet_project_2.Enums;
 using webNET_Hits_backend_aspnet_project_2.Models;
@@ -25,9 +26,9 @@ public class DishController: ControllerBase
     [ProducesResponseType(typeof(DishPagedListDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public IEnumerable<DishDto> GetListDishes([FromQuery] List<DishCategory> categories, bool vegetarian, SortingDish sorting, int page)
+    public IEnumerable<DishDto> GetListDishes([FromQuery] List<DishCategory> categories, [DefaultValue(false)] bool vegetarian, SortingDish sorting, [DefaultValue(1)] int page)
     {
-        return _dishService.GetDishes(sorting);
+        return _dishService.GetDishes(categories, vegetarian, sorting);
     }
 
     /// <summary>
