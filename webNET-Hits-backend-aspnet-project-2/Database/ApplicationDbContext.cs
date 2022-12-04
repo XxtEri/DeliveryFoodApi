@@ -16,9 +16,12 @@ public class ApplicationDbContext: DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        //TODO: доделать unique и ключи
-        //TODO: добавить связь M:M user и dish
-        
+        //TODO: cделать unique и ключи
+
+        modelBuilder.Entity<Dish>()
+            .HasMany(d => d.Users)
+            .WithMany(u => u.Dishes);
+
         modelBuilder.Entity<DishBasket>()
             .HasOne(p => p.User)
             .WithMany(c => c.DishBasket);
