@@ -15,9 +15,9 @@ public class BasketService: IBasketService
 
     public DishBasketDto[] GetBasketDishes(Guid id)
     {
-        var user = _context.DishBaskets.Find(id);
+        var user = _context.BasketDishes.Find(id);
         
-        return _context.DishBaskets.Where(x => x.UserId == id).Select(x => new DishBasketDto
+        return _context.BasketDishes.Where(x => x.UserId == id).Select(x => new DishBasketDto
         {
             Id = x.Id,
             Name = x.Name,
@@ -30,14 +30,14 @@ public class BasketService: IBasketService
     public async Task<DishBasketDto> AddDishInBasket(Guid id)
     {
         var model = _context.Dishes.Find(id);
-        var dishBasket = _context.DishBaskets.Find(id);
+        var dishBasket = _context.BasketDishes.Find(id);
         
         if (dishBasket!= null)
         {
             dishBasket.Amount += 1;
         } else
         {
-            await _context.DishBaskets.AddAsync(new DishBasket
+            await _context.BasketDishes.AddAsync(new DishBasket
             {
                 Id = id,
                 Name = model.Name,

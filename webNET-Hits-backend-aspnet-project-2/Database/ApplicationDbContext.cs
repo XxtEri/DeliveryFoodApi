@@ -5,7 +5,7 @@ namespace webNET_Hits_backend_aspnet_project_2.Models;
 public class ApplicationDbContext: DbContext
 {
     public DbSet<User> Users { get; set; }
-    public DbSet<DishBasket> DishBaskets { get; set; }
+    public DbSet<DishBasket> BasketDishes { get; set; }
     public DbSet<Dish> Dishes { get; set; }
     public DbSet<Order> Orders { get; set; }
 
@@ -16,6 +16,9 @@ public class ApplicationDbContext: DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        //TODO: доделать unique и ключи
+        //TODO: добавить связь M:M user и dish
+        
         modelBuilder.Entity<DishBasket>()
             .HasOne(p => p.User)
             .WithMany(c => c.DishBasket);
