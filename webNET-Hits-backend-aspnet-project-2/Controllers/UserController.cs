@@ -63,7 +63,6 @@ public class UserController: ControllerBase
     {
         var token = await _userService.LogInUser(model);
 
-       
         if (token.Token == null)
         {
             return BadRequest(new Response
@@ -73,7 +72,7 @@ public class UserController: ControllerBase
             });
         }
         
-        return new JsonResult(token);
+        return Ok(token);
     }
 
     /// <summary>

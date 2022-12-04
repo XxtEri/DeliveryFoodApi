@@ -10,7 +10,7 @@ namespace webNET_Hits_backend_aspnet_project_2.Controllers;
 [ApiController]
 [Route("api/dish")]
 [Produces("application/json")]
-public class DishController: ControllerBase
+public class DishController: Controller
 {
     private readonly IDishService _dishService;
 
@@ -26,9 +26,20 @@ public class DishController: ControllerBase
     [ProducesResponseType(typeof(DishPagedListDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public IEnumerable<DishDto> GetListDishes([FromQuery] List<DishCategory> categories, [DefaultValue(false)] bool vegetarian, SortingDish sorting, [DefaultValue(1)] int page)
+    public IActionResult GetListDishes([FromQuery] List<DishCategory> categories, [DefaultValue(false)] bool vegetarian, SortingDish sorting, [DefaultValue(1)] int page)
     {
-        return _dishService.GetDishes(categories, vegetarian, sorting);
+        var viewModel = _dishService.GetDishes(categories, vegetarian, sorting, page).Result;
+
+        if (viewModel == null)
+        {
+            return BadRequest(new Response
+            {
+                Status = "400",
+                Message = "Invalid value for attribute page"
+            });
+        }
+        
+        return Ok(viewModel);
     }
 
     /// <summary>

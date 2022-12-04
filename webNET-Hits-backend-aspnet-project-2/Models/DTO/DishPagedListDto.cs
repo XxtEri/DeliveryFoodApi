@@ -5,7 +5,7 @@ namespace webNET_Hits_backend_aspnet_project_2.Models.DTO;
 public class DishPagedListDto
 {
     [MaybeNull]
-    public DishDto[]  Dishes { get; set; }
+    public List<DishDto> Dishes { get; set; }
     
-    public PageInfoModel Pagination { get; set; }
+    public PageInfoModel PageInfoModel { get; set; }
 }

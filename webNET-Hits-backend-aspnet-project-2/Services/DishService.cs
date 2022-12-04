@@ -24,20 +24,60 @@ public class DishService: IDishService
         }
     }
 
-    public List<DishDto> GetDishes(List<DishCategory> categories, bool vegetarian, SortingDish sorting)
+    public async Task<DishPagedListDto?> GetDishes(List<DishCategory> categories, bool vegetarian, SortingDish sorting, int page)
     {
         var dishes = GetListDishDto(categories, vegetarian);
         
         dishes = SortingDishes(dishes, sorting);
-        
-        return dishes.AsNoTracking().ToList();
-    }
 
+        var pageSize = 5;
+        var countDishes = await dishes.CountAsync();
+        var count = countDishes / 5;
+        if (countDishes % pageSize < pageSize)
+        {
+            count++;
+        }
+
+        if (page > count)
+        {
+            return null;
+        }
+
+        var items = dishes.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+        
+        PageInfoModel pageInfoModel = new PageInfoModel(pageSize, count, page);
+        DishPagedListDto? viewModel = new DishPagedListDto()
+        {
+            Dishes = items,
+            PageInfoModel = pageInfoModel
+        };
+        
+        return viewModel;
+    }
+    
+    public DishDto GetInformationAboutDish(Guid id)
+    {
+        var dish = _context.Dishes.Find(id);
+        return new DishDto
+        {
+            Name = dish.Name,
+            Description = dish.Description,
+            Price = dish.Price,
+            Image = dish.Image,
+            Vegetarian = dish.Vegetarian,
+            Rating = dish.Rating,
+            Category = dish.Category,
+            Id = dish.Id
+        };
+    }
+    
     private IQueryable<DishDto> GetListDishDto(List<DishCategory> categories, bool vegetarian)
     {
+        bool isEmptyCategories = categories.Count == 0 ? true : false;
+        
         return vegetarian switch
         {
-            true => _context.Dishes.Where(x => x.Vegetarian == true && categories.Contains(x.Category)).Select(x => new DishDto
+            true => _context.Dishes.Where(x => x.Vegetarian == true && (isEmptyCategories || categories.Contains(x.Category))).Select(x => new DishDto
                     { 
                         Name = x.Name,
                         Description = x.Description, 
@@ -48,7 +88,7 @@ public class DishService: IDishService
                         Category = x.Category,
                         Id = x.Id
                     }),
-            false => _context.Dishes.Where(x => categories.Contains(x.Category)).Select(x => new DishDto
+            false => _context.Dishes.Where(x => isEmptyCategories || categories.Contains(x.Category)).Select(x => new DishDto
                     { 
                         Name = x.Name,
                         Description = x.Description, 
@@ -72,22 +112,6 @@ public class DishService: IDishService
             SortingDish.RatingAsk => dishes.OrderBy(s => s.Rating),
             SortingDish.RatingDesk => dishes.OrderByDescending(s => s.Rating),
             _ => dishes.OrderBy(s => s.Name)
-        };
-    }
-
-    public DishDto GetInformationAboutDish(Guid id)
-    {
-        var dish = _context.Dishes.Find(id);
-        return new DishDto
-        {
-            Name = dish.Name,
-            Description = dish.Description,
-            Price = dish.Price,
-            Image = dish.Image,
-            Vegetarian = dish.Vegetarian,
-            Rating = dish.Rating,
-            Category = dish.Category,
-            Id = dish.Id
         };
     }
 
