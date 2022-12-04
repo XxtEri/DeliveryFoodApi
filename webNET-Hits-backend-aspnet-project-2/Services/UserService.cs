@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using webNET_Hits_backend_aspnet_project_2.JWT;
 using webNET_Hits_backend_aspnet_project_2.Models;
+using webNET_Hits_backend_aspnet_project_2.Models.DTO;
 using webNET_Hits_backend_aspnet_project_2.Servises.InterfacesServices;
 
 namespace webNET_Hits_backend_aspnet_project_2.Servises;
@@ -62,6 +63,44 @@ public class UserService: IUserService
         return token;
     }
 
+    public async Task<UserDto> GetProfileUser(Guid id)
+    {
+        var user = await _context.Users.FindAsync(id);
+
+        return new UserDto
+        {
+            Id = user.Id,
+            FullName = user!.FullName,
+            BirthDate = user.BirthDate!,
+            Gender = user.Gender,
+            Address = user.Address!,
+            PhoneNumber = user.PhoneNumber!
+        };
+    }
+    
+    public async Task EditProfileUser(Guid id, UserEditModel model)
+    {
+        IEnumerable<User> users = _context.Users
+            .Where(x => x.Id == id)
+            .AsEnumerable()
+            .Select(x =>
+                {
+                    x.FullName = model.FullName;
+                    x.BirthDate = model.BirthDate!;
+                    x.Gender = model.Gender;
+                    x.Address = model.Address!;
+                    x.PhoneNumber = model.PhoneNumber!;
+                    return x;
+                });
+
+        foreach (var user in users)
+        {
+            _context.Users.Entry(user).State = EntityState.Modified;
+        }
+        
+        await _context.SaveChangesAsync();
+    }
+    
     private string GetEncodeJwtToken(ClaimsIdentity? identity)
     {
         var now = DateTime.UtcNow;
@@ -98,7 +137,7 @@ public class UserService: IUserService
         return null;
     }
 
-    public async Task AddUser(UserRegisterModel model)
+    private async Task AddUser(UserRegisterModel model)
     {
         await _context.Users.AddAsync(new User
         {
@@ -114,19 +153,4 @@ public class UserService: IUserService
         await _context.SaveChangesAsync();
     }
     
-    public async Task EditProfileUser(UserEditModel model)
-    {
-        var newModel = new User()
-        {
-            FullName = model.FullName,
-            BirthDate = model.BirthDate,
-            Gender = model.Gender,
-            Address = model.Address,
-            PhoneNumber = model.PhoneNumber
-        };
-        
-        _context.Users.Entry(newModel).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
-
-    }
 }

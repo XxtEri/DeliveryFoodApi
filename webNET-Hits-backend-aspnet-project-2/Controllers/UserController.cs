@@ -91,9 +91,11 @@ public class UserController: ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public string GetUserProfile()
+    public IActionResult GetUserProfile()
     {
-        return $"{User.Identity!.Name}";
+        var user = _userService.GetProfileUser(Guid.Parse(User.Identity!.Name!)).Result;
+
+        return Ok(user);
     }
 
     /// <summary>
@@ -106,8 +108,14 @@ public class UserController: ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public IActionResult EditUserProfile([FromBody] UserEditModel model)
+    public async Task<IActionResult> EditUserProfile([FromBody] UserEditModel model)
     {
-        return Ok(_userService.EditProfileUser(model));
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+
+        await _userService.EditProfileUser(Guid.Parse(User.Identity!.Name!), model);
+        return Ok();
     }
 }

@@ -37,4 +37,11 @@ public class User
     public List<DishBasket> DishBasket { get; set; }
     
     public List<Order> Order { get; set; }
+    
+    public ICollection<Dish> Dishes { get; set; }
+
+    public User()
+    {
+        Dishes = new List<Dish>();
+    }
 }
