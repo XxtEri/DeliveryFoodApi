@@ -71,6 +71,31 @@ public class DishService: IDishService
             Id = dish.Id
         };
     }
+
+    public bool CheckSetRating(Guid idUser, Guid idDish)
+    {
+        var dishesUser = _context.Users
+            .Where(x => x.Id == idUser)
+            .Select(x => x.Dishes);
+        
+        foreach (var dishes in dishesUser)
+        {
+            foreach (var dish in dishes)
+            {
+                if (dish.Id == idDish)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+    
+    public void SetRating(Guid idUser, Guid idDish, int ratingScore)
+    {
+        
+    }
     
     private IQueryable<DishDto> GetListDishDto(List<DishCategory> categories, bool vegetarian)
     {

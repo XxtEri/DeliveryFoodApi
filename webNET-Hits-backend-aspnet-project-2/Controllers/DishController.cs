@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using webNET_Hits_backend_aspnet_project_2.Enums;
 using webNET_Hits_backend_aspnet_project_2.Models;
@@ -69,28 +70,31 @@ public class DishController: Controller
     /// Check if user is able to set ration of the dish
     /// </summary>
     [HttpGet("{id}/rating/check")]
+    [Authorize]
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public string CheckCurrentUserSetRating(int id)
+    public IActionResult CheckCurrentUserSetRating(Guid idDish)
     {
-        return id.ToString();
+        return Ok(_dishService.CheckSetRating(Guid.Parse(User.Identity!.Name!), idDish));
     }
 
     /// <summary>
     /// Set a rating for a dish
     /// </summary>
     [HttpPost("{id}/rating")]
+    [Authorize]
     [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public String SetRatingOfDish(int id, int ratingScore)
+    public IActionResult SetRatingOfDish(Guid idDish, int ratingScore)
     {
-        return "Ok";
+        _dishService.SetRating(Guid.Parse(User.Identity!.Name!), idDish, ratingScore);
+        return Ok();
     }
 }
