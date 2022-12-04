@@ -22,21 +22,8 @@ builder.Services.AddSwaggerGen(c =>
         BearerFormat = "JWT",
         Scheme = "Bearer"
     });
-    
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                },
-            },
-            new List<string>()
-        }
-    });
+
+    c.OperationFilter<AuthOperationFilter>();
     
     var filePath = Path.Combine(System.AppContext.BaseDirectory, "webNET-Hits-backend-aspnet-project-2.xml");
     c.IncludeXmlComments(filePath);
