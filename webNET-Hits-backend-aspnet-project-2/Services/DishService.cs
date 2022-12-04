@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using webNET_Hits_backend_aspnet_project_2.Enums;
 using webNET_Hits_backend_aspnet_project_2.Models;
 using webNET_Hits_backend_aspnet_project_2.Models.DTO;
@@ -23,9 +24,9 @@ public class DishService: IDishService
         }
     }
 
-    public DishDto[] GenerateDishes()
+    public List<DishDto> GetDishes(SortingDish sorting)
     {
-        return _context.Dishes.Select(x => new DishDto
+        var dishes = _context.Dishes.Select(x => new DishDto
         {
             Name = x.Name,
             Description = x.Description,
@@ -35,7 +36,19 @@ public class DishService: IDishService
             Rating = x.Rating,
             Category = x.Category,
             Id = x.Id
-        }).ToArray();
+        });
+
+        dishes = sorting switch
+        {
+            SortingDish.NameAsk => dishes.OrderBy(s => s.Name),
+            SortingDish.NameDesk => dishes.OrderByDescending(s => s.Name),
+            SortingDish.PriceAsk => dishes.OrderBy(s => s.Price),
+            SortingDish.PriceDesk => dishes.OrderByDescending(s => s.Price),
+            SortingDish.RatingAsk => dishes.OrderBy(s => s.Rating),
+            SortingDish.RatingDesk => dishes.OrderByDescending(s => s.Rating)
+        };
+        
+        return dishes.AsNoTracking().ToList();
     }
 
     public DishDto GetInformationAboutDish(Guid id)
@@ -58,7 +71,7 @@ public class DishService: IDishService
     {
         _context.Dishes.Add(new Dish
         {
-            Name = "4 сыра",
+            Name = "A сыра",
             Description = "4 сыра: «Моцарелла», «Гауда», «Фета», «Дор-блю», сливочно-сырный соус, пряные травы",
             Price = 360,
             Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",
@@ -78,7 +91,27 @@ public class DishService: IDishService
         });
         _context.Dishes.Add(new Dish
         {
-            Name = "4 сыра",
+            Name = "B сыра",
+            Description = "4 сыра: «Моцарелла», «Гауда», «Фета», «Дор-блю», сливочно-сырный соус, пряные травы",
+            Price = 360,
+            Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",
+            Vegetarian = true,
+            Rating = 3.5,
+            Category = DishCategory.Pizza
+        });
+        _context.Dishes.Add(new Dish
+        {
+            Name = "Psdarty BBQ",
+            Description = "Бекон, соленый огурчик, брусника, сыр «Моцарелла», сыр «Гауда», соус BBQ",
+            Price = 480,
+            Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",
+            Vegetarian = false,
+            Rating = null,
+            Category = DishCategory.Pizza
+        });
+        _context.Dishes.Add(new Dish
+        {
+            Name = "4f сыра",
             Description = "4 сыра: «Моцарелла», «Гауда», «Фета», «Дор-блю», сливочно-сырный соус, пряные травы",
             Price = 360,
             Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",
@@ -98,27 +131,7 @@ public class DishService: IDishService
         });
         _context.Dishes.Add(new Dish
         {
-            Name = "4 сыра",
-            Description = "4 сыра: «Моцарелла», «Гауда», «Фета», «Дор-блю», сливочно-сырный соус, пряные травы",
-            Price = 360,
-            Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",
-            Vegetarian = true,
-            Rating = 3.5,
-            Category = DishCategory.Pizza
-        });
-        _context.Dishes.Add(new Dish
-        {
-            Name = "Party BBQ",
-            Description = "Бекон, соленый огурчик, брусника, сыр «Моцарелла», сыр «Гауда», соус BBQ",
-            Price = 480,
-            Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",
-            Vegetarian = false,
-            Rating = null,
-            Category = DishCategory.Pizza
-        });
-        _context.Dishes.Add(new Dish
-        {
-            Name = "4 сыра",
+            Name = "4a сыра",
             Description = "4 сыра: «Моцарелла», «Гауда», «Фета», «Дор-блю», сливочно-сырный соус, пряные травы",
             Price = 360,
             Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",

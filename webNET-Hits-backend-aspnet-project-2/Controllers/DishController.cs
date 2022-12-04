@@ -27,7 +27,7 @@ public class DishController: ControllerBase
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public IEnumerable<DishDto> GetListDishes([FromQuery] List<DishCategory> categories, bool vegetarian, SortingDish sorting, int page)
     {
-        return _dishService.GenerateDishes();
+        return _dishService.GetDishes(sorting);
     }
 
     /// <summary>
