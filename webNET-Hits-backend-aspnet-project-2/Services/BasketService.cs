@@ -13,51 +13,46 @@ public class BasketService: IBasketService
         _context = context;
     }
 
-    public DishBasketDto[] GetBasketDishes(Guid id)
+    public DishBasketDto[] GetBasketDishes(Guid idUser)
     {
-        var user = _context.BasketDishes.Find(id);
-        
-        return _context.BasketDishes.Where(x => x.UserId == id).Select(x => new DishBasketDto
-        {
-            Id = x.Id,
-            Name = x.Name,
-            Price = x.Price,
-            Amount = x.Amount,
-            Image = x.Image
-        }).ToArray();
+        return _context.BasketDishes
+            .Where(x => x.UserId == idUser)
+            .Select(x => new DishBasketDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Price = x.Price,
+                    Amount = x.Amount,
+                    Image = x.Image
+                }).ToArray();
     }
 
-    public async Task<DishBasketDto> AddDishInBasket(Guid id)
+    public async Task AddDishInBasket(Guid idUser, Guid idDish)
     {
-        var model = _context.Dishes.Find(id);
-        var dishBasket = _context.BasketDishes.Find(id);
-        
-        if (dishBasket!= null)
+        var model = _context.Dishes.Find(idDish);
+        var dishBasket = _context.BasketDishes.Find(idDish);
+
+        if (dishBasket != null && dishBasket.UserId == idUser)
         {
             dishBasket.Amount += 1;
         } else
         {
             await _context.BasketDishes.AddAsync(new DishBasket
             {
-                Id = id,
-                Name = model.Name,
+                Id = idDish,
+                Name = model!.Name!,
                 Price = model.Price,
                 Amount = 1,
-                Image = model.Image,
+                Image = model.Image!,
+                User = _context.Users.Find(idUser)!
             });
             
             await _context.SaveChangesAsync();
         }
+    }
 
-        var dishBasketDto = new DishBasketDto
-        {
-            Id = id,
-            Name = model.Name,
-            Price = model.Price,
-            Amount = dishBasket.Amount,
-            Image = model.Image
-        };
+    public void DeleteDishOfBasket(Guid id)
+    {
         
-        return dishBasketDto;
     }
 }

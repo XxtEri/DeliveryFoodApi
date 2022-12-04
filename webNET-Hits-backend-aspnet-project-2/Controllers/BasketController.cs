@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using webNET_Hits_backend_aspnet_project_2.Models;
 using webNET_Hits_backend_aspnet_project_2.Models.DTO;
@@ -22,21 +23,21 @@ public class BasketController: ControllerBase
     /// Get user cart
     /// </summary>
     [HttpGet]
+    [Authorize]
     [ProducesResponseType(typeof(DishBasketDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public IEnumerable<DishBasketDto> GetDishesInBasket()
     {
-        Guid idUser = Guid.Parse(User.Identity!.Name!);
-        
-        return _basketService.GetBasketDishes(idUser);
+        return _basketService.GetBasketDishes(Guid.Parse(User.Identity!.Name!));
     }
 
     /// <summary>
     /// Add dish to cart
     /// </summary>
     [HttpPost("dish/{dishId}")]
+    [Authorize]
     [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
@@ -45,20 +46,21 @@ public class BasketController: ControllerBase
     public IActionResult AddDishToBasket(Guid dishId)
     {
 
-        return Ok(_basketService.AddDishInBasket(dishId));
+        return Ok(_basketService.AddDishInBasket(Guid.Parse(User.Identity!.Name!), dishId));
     }
 
     /// <summary>
     /// Decrease the number of dishes in the cart (if increase = true), ot remove the dish completely (increase = false)
     /// </summary>
     [HttpDelete("dish/{dishId}")]
+    [Authorize]
     [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public String DeleteDishInBasket(Guid dishId, bool increase)
+    public IActionResult DeleteDishInBasket(Guid dishId, bool increase)
     {
-        return "Ok";
+        return Ok();
     }
 }
