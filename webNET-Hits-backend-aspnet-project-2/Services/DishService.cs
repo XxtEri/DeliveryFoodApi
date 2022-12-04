@@ -10,11 +10,6 @@ public class DishService: IDishService
 {
     private readonly ApplicationDbContext _context;
 
-    private static readonly string[] Dishes = new[]
-    {
-        "Potato", "Chicken", "Fish"
-    };
-
     public DishService(ApplicationDbContext context)
     {
         _context = context;
@@ -55,9 +50,15 @@ public class DishService: IDishService
         return viewModel;
     }
     
-    public DishDto GetInformationAboutDish(Guid id)
+    public DishDto? GetInformationAboutDish(Guid id)
     {
         var dish = _context.Dishes.Find(id);
+
+        if (dish == null)
+        {
+            return null;
+        }
+        
         return new DishDto
         {
             Name = dish.Name,
@@ -115,7 +116,7 @@ public class DishService: IDishService
         };
     }
 
-    public async void AddDishes()
+    private async void AddDishes()
     {
         _context.Dishes.Add(new Dish
         {

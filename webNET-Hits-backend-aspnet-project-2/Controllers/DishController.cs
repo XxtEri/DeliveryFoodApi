@@ -34,7 +34,7 @@ public class DishController: Controller
         {
             return BadRequest(new Response
             {
-                Status = "400",
+                Status = "Error",
                 Message = "Invalid value for attribute page"
             });
         }
@@ -49,9 +49,20 @@ public class DishController: Controller
     [ProducesResponseType(typeof(DishDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public DishDto GetInformationConcreteDish(Guid id)
+    public IActionResult GetInformationConcreteDish(Guid id)
     {
-        return _dishService.GetInformationAboutDish(id);
+        var dish = _dishService.GetInformationAboutDish(id);
+
+        if (dish == null)
+        {
+            return NotFound(new Response
+            {
+                Status = "Error",
+                Message = "Dish with id=ffb38534-8e00-4a68-9cc7-024079ecc076 don't in database"
+            });
+        }
+
+        return Ok(dish);
     }
     
     /// <summary>
