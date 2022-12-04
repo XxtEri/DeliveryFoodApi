@@ -8,11 +8,7 @@ using webNET_Hits_backend_aspnet_project_2.Servises;
 using webNET_Hits_backend_aspnet_project_2.Servises.InterfacesServices;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
