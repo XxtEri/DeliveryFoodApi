@@ -18,10 +18,6 @@ public class ApplicationDbContext: DbContext
     {
         //TODO: cделать unique и ключи
 
-        modelBuilder.Entity<Dish>()
-            .HasMany(d => d.Users)
-            .WithMany(u => u.Dishes);
-
         modelBuilder.Entity<DishBasket>()
             .HasOne(p => p.User)
             .WithMany(c => c.DishBasket);

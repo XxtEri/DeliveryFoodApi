@@ -74,21 +74,6 @@ public class DishService: IDishService
 
     public bool CheckSetRating(Guid idUser, Guid idDish)
     {
-        var dishesUser = _context.Users
-            .Where(x => x.Id == idUser)
-            .Select(x => x.Dishes);
-        
-        foreach (var dishes in dishesUser)
-        {
-            foreach (var dish in dishes)
-            {
-                if (dish.Id == idDish)
-                {
-                    return true;
-                }
-            }
-        }
-
         return false;
     }
     

@@ -28,11 +28,4 @@ public class Dish
     public double? Rating { get; set; }
     
     public DishCategory Category { get; set; }
-    
-    public virtual ICollection<User> Users { get; set; }
-
-    public Dish()
-    {
-        Users = new List<User>();
-    }
 }
