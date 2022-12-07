@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using webNET_Hits_backend_aspnet_project_2.Models;
 using webNET_Hits_backend_aspnet_project_2.Models.DTO;
@@ -21,29 +22,30 @@ public class OrderController: ControllerBase
     /// Get information about concrete order
     /// </summary>
     [HttpGet("{id}")]
+    [Authorize]
     [ProducesResponseType(typeof(OrderDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetInformationOrder(Guid idOrder)
+    public async Task<ActionResult<OrderInfoDto>> GetInformationOrder(Guid id)
     {
         var idUser = Guid.Parse(User.Identity!.Name!);
-        var response = await _orderService.CheckErrors(idOrder, idUser);
+        var response = await _orderService.CheckErrors(id, idUser);
 
         return response switch
         {
             "not found" => NotFound(new Response
             {
                 Status = "Error",
-                Message = $"Order with id={idOrder} don't in database"
+                Message = $"Order with id={id} don't in database"
             }),
             "forbidden" => StatusCode(403, new Response
             {
                 Status = "Error",
                 Message = $"User with id={idUser} has insufficient rights"
             }),  
-            "ok" => Ok(_orderService.GetInformationOrder(idOrder))
+            "ok" => Ok(_orderService.GetInformationOrder(id))
         };
     }
 
@@ -51,6 +53,7 @@ public class OrderController: ControllerBase
     /// Get a list of orders
     /// </summary>
     [HttpGet]
+    [Authorize]
     [ProducesResponseType(typeof(OrderInfoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
@@ -65,15 +68,27 @@ public class OrderController: ControllerBase
     /// Creating the order from dishes in basket
     /// </summary>
     [HttpPost]
+    [Authorize]
     [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public string CreateOrder()
+    public async Task<IActionResult> CreateOrder([FromBody] OrderCreateDto model)
     {
-        return "Ok";
+        var idUser = Guid.Parse(User.Identity!.Name!);
+        var response = await _orderService.CreatingOrderFromBasket(idUser, model);
+
+        return response switch
+        {
+            "bad request" => BadRequest(new Response
+            {
+                Status = "Error",
+                Message = $"Empty basket for user with id={idUser}"
+            }),
+            "ok" => Ok()
+        };
     }
 
     /// <summary>

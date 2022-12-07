@@ -12,21 +12,21 @@ public class Order
     
     [ForeignKey("User")]
     public Guid UserId { get; set; }
-    
+
     [DataType(DataType.DateTime)]
     [Required]
     public string DeliveryTime { get; set; }
-    
+
     [DataType(DataType.DateTime)]
     [Required]
     public string OrderTime { get; set; }
-    
+
     [Required]
     public OrderStatus Status { get; set; }
-    
+
     [Required]
     public double Price { get; set; }
-    
+
     [MaybeNull]
     public List<DishBasket> Dishes { get; set; }
     

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+using webNET_Hits_backend_aspnet_project_2.Enums;
 using webNET_Hits_backend_aspnet_project_2.Models;
 using webNET_Hits_backend_aspnet_project_2.Models.DTO;
 using webNET_Hits_backend_aspnet_project_2.Servises.InterfacesServices;
@@ -31,7 +31,7 @@ public class OrderService: IOrderService
         return "ok";
     }
 
-    public async Task<ActionResult<OrderDto>> GetInformationOrder(Guid idOrder)
+    public async Task<OrderDto> GetInformationOrder(Guid idOrder)
     {
         var order = await _context.Orders.FindAsync(idOrder);
         
@@ -58,10 +58,11 @@ public class OrderService: IOrderService
                     Amount = dish.Amount,
                     Image = dish.Image
                 });
+                await _context.SaveChangesAsync();
             }
         }
         
-        return new OkObjectResult(view);
+        return view;
     }
 
     public OrderInfoDto[] GetListOrders(Guid idUser)
@@ -76,5 +77,48 @@ public class OrderService: IOrderService
                 Status = model.Status,
                 Price = model.Price
             }).ToArray();
+    }
+
+    public async Task<string> CreatingOrderFromBasket(Guid idUser, OrderCreateDto model)
+    {
+        var dishes = _context.BasketDishes
+            .Where(x => x.UserId == idUser)
+            .ToList();
+        
+        if (dishes.Count == 0)
+        {
+            return "bad request";
+        }
+
+        await _context.Orders.AddAsync(new Order
+        {
+            UserId = idUser,
+            DeliveryTime = model.DeliveryTime,
+            OrderTime = DateTime.Now.ToString(),
+            Address = model.Address,
+            Status = OrderStatus.InProcess,
+            Price = SumPriceDishes(dishes),
+            Dishes = dishes
+        });
+        
+        foreach (var dishBasket in dishes)
+        {
+            _context.BasketDishes.Remove(dishBasket);
+        }
+        
+        await _context.SaveChangesAsync();
+        return "ok";
+    }
+    
+    private double SumPriceDishes(List<DishBasket> dishes)
+    {
+        double sum = 0;
+
+        foreach (var dish in dishes)
+        {
+            sum += dish.TotalPrice;
+        }
+
+        return sum;
     }
 }
