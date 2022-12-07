@@ -1,4 +1,3 @@
-using System.Data.Entity;
 using webNET_Hits_backend_aspnet_project_2.Models;
 using webNET_Hits_backend_aspnet_project_2.Models.DTO;
 using webNET_Hits_backend_aspnet_project_2.Servises.InterfacesServices;
@@ -30,7 +29,7 @@ public class BasketService: IBasketService
 
     public async Task<string> AddDishInBasket(Guid idUser, Guid idDish)
     {
-        var dishBasket = await _context.BasketDishes.FirstOrDefaultAsync(x => x.Id == idDish);
+        var dishBasket = await _context.BasketDishes.FindAsync(idDish);
 
         if (dishBasket != null && dishBasket.UserId == idUser)
         {
@@ -39,13 +38,13 @@ public class BasketService: IBasketService
             return "ok";
         }
         
-        var model = await _context.Dishes.FirstOrDefaultAsync(x => x.Id == idDish);
+        var model = await _context.Dishes.FindAsync(idDish);
         if (model == null)
         {
             return "not found";
         }
             
-        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == idUser)!;
+        var user = (await _context.Users.FindAsync(idUser))!;
 
         await _context.BasketDishes.AddAsync(new DishBasket
         {
@@ -55,6 +54,8 @@ public class BasketService: IBasketService
             Price = model.Price,
             Amount = 1,
             Image = model.Image!,
+            User = user,
+            Dish = model
         });
             
         await _context.SaveChangesAsync();
@@ -66,16 +67,15 @@ public class BasketService: IBasketService
 
     public async Task<string> DeleteDishOfBasket(Guid idUser, Guid idDish, bool increase)
     {
-        var dishBasket = await _context.BasketDishes.FirstOrDefaultAsync(x => x.Id == idDish);
+        var dishBasket = await _context.BasketDishes.FindAsync(idDish);
         if (dishBasket == null)
         {
             return "not found";
         }
 
-        if (increase)
+        if (increase && dishBasket.Amount > 1)
         {
             dishBasket.Amount -= 1;
-
         } else
         {
             _context.Remove(dishBasket);
