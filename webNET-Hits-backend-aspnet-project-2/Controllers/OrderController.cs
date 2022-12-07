@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using webNET_Hits_backend_aspnet_project_2.Models;
 using webNET_Hits_backend_aspnet_project_2.Models.DTO;
+using webNET_Hits_backend_aspnet_project_2.Servises.InterfacesServices;
 
 namespace webNET_Hits_backend_aspnet_project_2.Controllers;
 
@@ -9,11 +10,11 @@ namespace webNET_Hits_backend_aspnet_project_2.Controllers;
 [Produces("application/json")]
 public class OrderController: ControllerBase
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IOrderService _orderService;
 
-    public OrderController(ApplicationDbContext context)
+    public OrderController(IOrderService orderService)
     {
-        _context = context;
+        _orderService = orderService;
     }
 
     /// <summary>
@@ -25,9 +26,25 @@ public class OrderController: ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public string GetInformationOrder(Guid id)
+    public async Task<IActionResult> GetInformationOrder(Guid idOrder)
     {
-        return id.ToString();
+        var idUser = Guid.Parse(User.Identity!.Name!);
+        var response = await _orderService.CheckErrors(idOrder, idUser);
+
+        return response switch
+        {
+            "not found" => NotFound(new Response
+            {
+                Status = "Error",
+                Message = $"Order with id={idOrder} don't in database"
+            }),
+            "forbidden" => StatusCode(403, new Response
+            {
+                Status = "Error",
+                Message = $"User with id={idUser} has insufficient rights"
+            }),  
+            "ok" => Ok(_orderService.GetInformationOrder(idOrder))
+        };
     }
 
     /// <summary>
@@ -39,9 +56,9 @@ public class OrderController: ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public string GetListOrders()
+    public IActionResult GetListOrders()
     {
-        return "Bla";
+        return Ok(_orderService.GetListOrders(Guid.Parse(User.Identity!.Name!)));
     }
 
     /// <summary>
