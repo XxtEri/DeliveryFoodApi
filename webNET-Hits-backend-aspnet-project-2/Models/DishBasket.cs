@@ -10,6 +10,7 @@ public class DishBasket
     [ForeignKey("Dish")]
     public Guid Id { get; set; }
     
+    [Required]
     [ForeignKey("User")]
     public Guid UserId { get; set; }
     
@@ -33,6 +34,4 @@ public class DishBasket
     public User User { get; set; }
     
     public Dish Dish { get; set; }
-    
-    public Order Order { get; set; }
 }

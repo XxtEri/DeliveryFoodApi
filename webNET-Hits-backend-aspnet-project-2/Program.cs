@@ -62,6 +62,7 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<IDishService, DishService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IBasketService, BasketService>();
 
 var app = builder.Build();
 

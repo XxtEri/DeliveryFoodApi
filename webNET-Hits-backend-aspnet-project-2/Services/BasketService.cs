@@ -1,3 +1,4 @@
+using System.Data.Entity;
 using webNET_Hits_backend_aspnet_project_2.Models;
 using webNET_Hits_backend_aspnet_project_2.Models.DTO;
 using webNET_Hits_backend_aspnet_project_2.Servises.InterfacesServices;
@@ -27,32 +28,60 @@ public class BasketService: IBasketService
                 }).ToArray();
     }
 
-    public async Task AddDishInBasket(Guid idUser, Guid idDish)
+    public async Task<string> AddDishInBasket(Guid idUser, Guid idDish)
     {
-        var model = _context.Dishes.Find(idDish);
-        var dishBasket = _context.BasketDishes.Find(idDish);
+        var dishBasket = await _context.BasketDishes.FirstOrDefaultAsync(x => x.Id == idDish);
 
         if (dishBasket != null && dishBasket.UserId == idUser)
         {
             dishBasket.Amount += 1;
-        } else
-        {
-            await _context.BasketDishes.AddAsync(new DishBasket
-            {
-                Id = idDish,
-                Name = model!.Name!,
-                Price = model.Price,
-                Amount = 1,
-                Image = model.Image!,
-                User = _context.Users.Find(idUser)!
-            });
-            
             await _context.SaveChangesAsync();
+            return "ok";
         }
+        
+        var model = await _context.Dishes.FirstOrDefaultAsync(x => x.Id == idDish);
+        if (model == null)
+        {
+            return "not found";
+        }
+            
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == idUser)!;
+
+        await _context.BasketDishes.AddAsync(new DishBasket
+        {
+            Id = model.Id,
+            UserId = user.Id,
+            Name = model!.Name!,
+            Price = model.Price,
+            Amount = 1,
+            Image = model.Image!,
+        });
+            
+        await _context.SaveChangesAsync();
+
+        return "ok";
+        
+        
     }
 
-    public void DeleteDishOfBasket(Guid id)
+    public async Task<string> DeleteDishOfBasket(Guid idUser, Guid idDish, bool increase)
     {
-        
+        var dishBasket = await _context.BasketDishes.FirstOrDefaultAsync(x => x.Id == idDish);
+        if (dishBasket == null)
+        {
+            return "not found";
+        }
+
+        if (increase)
+        {
+            dishBasket.Amount -= 1;
+
+        } else
+        {
+            _context.Remove(dishBasket);
+        }
+
+        await _context.SaveChangesAsync();
+        return "ok";
     }
 }

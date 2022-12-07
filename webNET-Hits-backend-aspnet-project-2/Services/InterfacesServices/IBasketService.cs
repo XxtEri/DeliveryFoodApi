@@ -5,6 +5,6 @@ namespace webNET_Hits_backend_aspnet_project_2.Servises.InterfacesServices;
 public interface IBasketService
 {
     DishBasketDto[] GetBasketDishes(Guid id);
-    Task AddDishInBasket(Guid idUser, Guid idDish);
-    void DeleteDishOfBasket(Guid id);
+    Task<string> AddDishInBasket(Guid idUser, Guid idDish);
+    Task<string> DeleteDishOfBasket(Guid idUser, Guid idDish, bool increase);
 }

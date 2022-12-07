@@ -12,7 +12,6 @@ namespace webNET_Hits_backend_aspnet_project_2.Controllers;
 public class BasketController: ControllerBase
 {
     private readonly IBasketService _basketService;
-    private readonly ApplicationDbContext _context;
 
     public BasketController(IBasketService basketService)
     {
@@ -45,12 +44,21 @@ public class BasketController: ControllerBase
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public IActionResult AddDishToBasket(Guid dishId)
     {
+        var response = _basketService.AddDishInBasket(Guid.Parse(User.Identity!.Name!), dishId).Result;
 
-        return Ok(_basketService.AddDishInBasket(Guid.Parse(User.Identity!.Name!), dishId));
+        return response switch
+        {
+            "ok" => Ok(),
+            "not found" => NotFound(new Response
+            {
+                Status = "Error",
+                Message = $"Dish with id={dishId} don't in basket"
+            })
+        };
     }
 
     /// <summary>
-    /// Decrease the number of dishes in the cart (if increase = true), ot remove the dish completely (increase = false)
+    /// Decrease the number of dishes in the cart (if increase = true), or remove the dish completely (increase = false)
     /// </summary>
     [HttpDelete("dish/{dishId}")]
     [Authorize]
@@ -61,6 +69,16 @@ public class BasketController: ControllerBase
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public IActionResult DeleteDishInBasket(Guid dishId, bool increase)
     {
-        return Ok();
+        var response = _basketService.DeleteDishOfBasket(Guid.Parse(User.Identity!.Name!), dishId, increase).Result;
+
+        return response switch
+        {
+            "ok" => Ok(),
+            "not found" => NotFound(new Response
+            {
+                Status = "Error",
+                Message = $"Dish with id={dishId} don't in basket"
+            })
+        };
     }
 }
