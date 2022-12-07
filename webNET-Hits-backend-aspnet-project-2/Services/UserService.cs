@@ -72,6 +72,7 @@ public class UserService: IUserService
             Id = user.Id,
             FullName = user!.FullName,
             BirthDate = user.BirthDate!,
+            Email = user.Email,
             Gender = user.Gender,
             Address = user.Address!,
             PhoneNumber = user.PhoneNumber!
