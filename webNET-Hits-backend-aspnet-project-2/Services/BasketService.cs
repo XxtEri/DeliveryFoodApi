@@ -31,8 +31,12 @@ public class BasketService: IBasketService
     public async Task<string> AddDishInBasket(Guid idUser, Guid idDish)
     {
         var dishBasket = await _context.BasketDishes.FindAsync(idDish);
-
-        if (dishBasket != null && dishBasket.UserId == idUser)
+        
+        if (dishBasket != null && dishBasket.UserId != idUser)
+        {
+            return "forbidden";
+            
+        } else if (dishBasket != null)
         {
             dishBasket.Amount += 1;
             await _context.SaveChangesAsync();
@@ -42,7 +46,7 @@ public class BasketService: IBasketService
         var model = await _context.Dishes.FindAsync(idDish);
         if (model == null)
         {
-            return "not found";
+            return "not found in menu";
         }
             
         var user = (await _context.Users.FindAsync(idUser))!;
@@ -66,17 +70,25 @@ public class BasketService: IBasketService
         
     }
 
-    public async Task<string> DeleteDishOfBasket(Guid idUser, Guid idDish, bool increase)
+    public async Task<string> DeleteDishOfBasket(Guid userId, Guid dishId, bool increase)
     {
-        var dishBasket = await _context.BasketDishes.FindAsync(idDish);
+        var dishBasket = await _context.BasketDishes.FindAsync(dishId);
+        
         if (dishBasket == null)
         {
             return "not found";
+            
+        }
+        
+        if (dishBasket.UserId != userId)
+        {
+            return "forbidden";
         }
 
         if (increase && dishBasket.Amount > 1)
         {
             dishBasket.Amount -= 1;
+            
         } else
         {
             _context.Remove(dishBasket);

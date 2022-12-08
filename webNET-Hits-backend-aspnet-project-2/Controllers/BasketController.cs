@@ -44,16 +44,22 @@ public class BasketController: ControllerBase
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public IActionResult AddDishToBasket(Guid dishId)
     {
-        var response = _basketService.AddDishInBasket(Guid.Parse(User.Identity!.Name!), dishId).Result;
+        var userId = Guid.Parse(User.Identity!.Name!);
+        var response = _basketService.AddDishInBasket(userId, dishId).Result;
 
         return response switch
         {
-            "ok" => Ok(),
             "not found" => NotFound(new Response
             {
                 Status = "Error",
-                Message = $"Dish with id={dishId} don't in basket"
-            })
+                Message = $"The dish with id={dishId} is not on the menu"
+            }),
+            "forbidden" => StatusCode(403, new Response
+            {
+                Status = "Error",
+                Message = $"User with id={userId} has insufficient rights"
+            }),
+            _ => Ok()
         };
     }
 
@@ -69,16 +75,22 @@ public class BasketController: ControllerBase
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public IActionResult DeleteDishInBasket(Guid dishId, bool increase)
     {
-        var response = _basketService.DeleteDishOfBasket(Guid.Parse(User.Identity!.Name!), dishId, increase).Result;
+        var userId = Guid.Parse(User.Identity!.Name!);
+        var response = _basketService.DeleteDishOfBasket(userId, dishId, increase).Result;
 
         return response switch
         {
-            "ok" => Ok(),
             "not found" => NotFound(new Response
             {
                 Status = "Error",
-                Message = $"Dish with id={dishId} don't in basket"
-            })
+                Message = $"The dish with id={dishId} is not on the menu"
+            }),
+            "forbidden" => StatusCode(403, new Response
+            {
+                Status = "Error",
+                Message = $"User with id={userId} has insufficient rights"
+            }),
+            _ => Ok()
         };
     }
 }
