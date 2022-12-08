@@ -91,9 +91,9 @@ public class UserController: ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public IActionResult GetUserProfile()
+    public async Task<IActionResult> GetUserProfile()
     {
-        var user = _userService.GetProfileUser(Guid.Parse(User.Identity!.Name!)).Result;
+        var user = await _userService.GetProfileUser(Guid.Parse(User.Identity!.Name!));
 
         return Ok(user);
     }

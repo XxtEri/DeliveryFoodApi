@@ -28,7 +28,7 @@ public class OrderController: ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<OrderInfoDto>> GetInformationOrder(Guid id)
+    public async Task<IActionResult> GetInformationOrder(Guid id)
     {
         var idUser = Guid.Parse(User.Identity!.Name!);
         var response = await _orderService.CheckErrors(id, idUser);
@@ -45,7 +45,7 @@ public class OrderController: ControllerBase
                 Status = "Error",
                 Message = $"User with id={idUser} has insufficient rights"
             }),  
-            "ok" => Ok(_orderService.GetInformationOrder(id))
+            "ok" => Ok(await _orderService.GetInformationOrder(id))
         };
     }
 
