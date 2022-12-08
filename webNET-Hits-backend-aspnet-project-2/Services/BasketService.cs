@@ -22,6 +22,7 @@ public class BasketService: IBasketService
                     Id = x.Id,
                     Name = x.Name,
                     Price = x.Price,
+                    TotalPrice = x.TotalPrice,
                     Amount = x.Amount,
                     Image = x.Image
                 }).ToArray();
