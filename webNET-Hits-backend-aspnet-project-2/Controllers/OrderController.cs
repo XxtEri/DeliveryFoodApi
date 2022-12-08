@@ -75,10 +75,11 @@ public class OrderController: ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> CreateOrder([FromBody] OrderCreateDto model)
+    public IActionResult CreateOrder([FromBody] OrderCreateDto model)
     {
+        var userId = User.Identity!.Name!;
         var idUser = Guid.Parse(User.Identity!.Name!);
-        var response = await _orderService.CreatingOrderFromBasket(idUser, model);
+        var response = _orderService.CreatingOrderFromBasket(idUser, model);
 
         return response switch
         {
@@ -95,6 +96,7 @@ public class OrderController: ControllerBase
     /// Confirm order delivery
     /// </summary>
     [HttpPost("{id}/status")]
+    [Authorize]
     [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
@@ -105,5 +107,4 @@ public class OrderController: ControllerBase
     {
         return "Ok";
     }
-    
 }

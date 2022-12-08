@@ -34,7 +34,10 @@ public class OrderService: IOrderService
     public async Task<OrderDto> GetInformationOrder(Guid idOrder)
     {
         var order = await _context.Orders.FindAsync(idOrder);
-        
+        // var dishes = _context.BasketDishes
+        //     .Where(x => x.OrderId == order.Id && x.UserId == order.UserId)
+        //     .ToList();
+
         var view = new OrderDto
         {
             Id = order.Id,
@@ -45,22 +48,18 @@ public class OrderService: IOrderService
             Address = order.Address
         };
 
-        if (order.Dishes != null)
-        {
-            foreach (var dish in order.Dishes)
-            {
-                view.Dishes?.Add(new DishBasketDto
-                {
-                    Id = dish.Id,
-                    Name = dish.Name,
-                    Price = dish.Price,
-                    TotalPrice = dish.TotalPrice,
-                    Amount = dish.Amount,
-                    Image = dish.Image
-                });
-                await _context.SaveChangesAsync();
-            }
-        }
+        // foreach (var dish in dishes)
+        // {
+        //     view.Dishes.Add(new DishBasketDto
+        //     {
+        //         Id = dish.Id,
+        //         Name = dish.Name,
+        //         Price = dish.Price,
+        //         TotalPrice = dish.TotalPrice,
+        //         Amount = dish.Amount,
+        //         Image = dish.Image
+        //     });
+        // }
         
         return view;
     }
@@ -68,7 +67,7 @@ public class OrderService: IOrderService
     public OrderInfoDto[] GetListOrders(Guid idUser)
     {
         return _context.Orders
-            .Where(model => model.Id == idUser)
+            .Where(model => model.UserId == idUser)
             .Select(model => new OrderInfoDto
             {
                 Id = model.Id,
@@ -79,35 +78,63 @@ public class OrderService: IOrderService
             }).ToArray();
     }
 
-    public async Task<string> CreatingOrderFromBasket(Guid idUser, OrderCreateDto model)
+    public string CreatingOrderFromBasket(Guid idUser, OrderCreateDto model)
     {
         var dishes = _context.BasketDishes
             .Where(x => x.UserId == idUser)
             .ToList();
-        
+
         if (dishes.Count == 0)
         {
             return "bad request";
         }
 
-        await _context.Orders.AddAsync(new Order
+        Order order = new Order
         {
             UserId = idUser,
             DeliveryTime = model.DeliveryTime,
             OrderTime = DateTime.Now.ToString(),
             Address = model.Address,
             Status = OrderStatus.InProcess,
-            Price = SumPriceDishes(dishes),
-            Dishes = dishes
-        });
+            Price = SumPriceDishes(dishes)
+        };
         
+        _context.Orders.Add(order);
+        _context.SaveChanges();
+        
+        ClearBasket(dishes);
+        
+        AddDishes(dishes, order.Id);
+
+        return "ok";
+    }
+
+    private void AddDishes(List<DishBasket> dishes, Guid orderId)
+    {
+        foreach (var dish in dishes)
+        {
+            _context.OrderingDishes.Add(new OrderingDish
+            {
+                OrderId = orderId,
+                DishId = dish.Id,
+                UserId = dish.Id,
+                Name = dish.Name,
+                Price = dish.Price,
+                Amount = dish.Amount,
+                Image = dish.Image
+            });
+            
+            _context.SaveChanges();
+        }
+    }
+
+    private void ClearBasket(List<DishBasket> dishes)
+    {
         foreach (var dishBasket in dishes)
         {
             _context.BasketDishes.Remove(dishBasket);
         }
-        
-        await _context.SaveChangesAsync();
-        return "ok";
+        _context.SaveChanges();
     }
     
     private double SumPriceDishes(List<DishBasket> dishes)
@@ -121,4 +148,5 @@ public class OrderService: IOrderService
 
         return sum;
     }
+    
 }

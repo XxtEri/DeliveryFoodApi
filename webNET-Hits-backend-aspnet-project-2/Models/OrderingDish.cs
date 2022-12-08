@@ -4,14 +4,18 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace webNET_Hits_backend_aspnet_project_2.Models;
 
-public class DishBasket
+public class OrderingDish
 {
     [Key]
-    [ForeignKey("Dish")]
     public Guid Id { get; set; }
     
+    [ForeignKey("Order")]
+    public Guid OrderId { get; set; }
+    
     [Required]
-    [ForeignKey("User")]
+    public Guid DishId { get; set; }
+    
+    [Required]
     public Guid UserId { get; set; }
 
     [Required]
@@ -29,9 +33,6 @@ public class DishBasket
     
     [MaybeNull]
     public string Image { get; set; }
-
-    [Required]
-    public User User { get; set; }
     
-    public Dish Dish { get; set; }
+    public Order Order { get; set; }
 }

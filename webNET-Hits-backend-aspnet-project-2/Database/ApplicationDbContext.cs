@@ -5,8 +5,9 @@ namespace webNET_Hits_backend_aspnet_project_2.Models;
 public class ApplicationDbContext: DbContext
 {
     public DbSet<User> Users { get; set; }
-    public DbSet<DishBasket> BasketDishes { get; set; }
     public DbSet<Dish> Dishes { get; set; }
+    public DbSet<DishBasket> BasketDishes { get; set; }
+    public DbSet<OrderingDish> OrderingDishes { get; set; }
     public DbSet<Order> Orders { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options)
@@ -25,10 +26,7 @@ public class ApplicationDbContext: DbContext
         modelBuilder.Entity<Order>()
             .HasOne(p => p.User)
             .WithMany(c => c.Order);
-
-        modelBuilder.Entity<Order>()
-            .HasMany(o => o.Dishes);
-
+        
         modelBuilder.Entity<DishBasket>()
             .HasOne(p => p.Dish);
     }

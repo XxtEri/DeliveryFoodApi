@@ -7,5 +7,5 @@ public interface IOrderService
     Task<string> CheckErrors(Guid idOrder, Guid idUser);
     Task<OrderDto>  GetInformationOrder(Guid idOrder);
     OrderInfoDto[] GetListOrders(Guid idUser);
-    Task<string> CreatingOrderFromBasket(Guid idUser, OrderCreateDto model);
+    string CreatingOrderFromBasket(Guid idUser, OrderCreateDto model);
 }
