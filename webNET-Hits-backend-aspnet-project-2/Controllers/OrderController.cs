@@ -77,7 +77,6 @@ public class OrderController: ControllerBase
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public IActionResult CreateOrder([FromBody] OrderCreateDto model)
     {
-        var userId = User.Identity!.Name!;
         var idUser = Guid.Parse(User.Identity!.Name!);
         var response = _orderService.CreatingOrderFromBasket(idUser, model);
 

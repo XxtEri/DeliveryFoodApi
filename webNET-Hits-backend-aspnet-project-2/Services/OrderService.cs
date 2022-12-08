@@ -34,34 +34,31 @@ public class OrderService: IOrderService
     public async Task<OrderDto> GetInformationOrder(Guid idOrder)
     {
         var order = await _context.Orders.FindAsync(idOrder);
-        // var dishes = _context.BasketDishes
-        //     .Where(x => x.OrderId == order.Id && x.UserId == order.UserId)
-        //     .ToList();
 
-        var view = new OrderDto
+        var dishes = _context.OrderingDishes
+            .Where(x => x.OrderId == order.Id && x.UserId == order.UserId)
+            .Select(x => new DishBasketDto
+            {
+                Id = x.DishId,
+                Name = x.Name,
+                Price = x.Price,
+                TotalPrice = x.TotalPrice,
+                Amount = x.Amount,
+                Image = x.Image
+            }).ToList();
+
+        var orderView = new OrderDto
         {
             Id = order.Id,
             DeliveryTime = order.DeliveryTime,
             OrderTime = order.OrderTime,
             Status = order.Status,
             Price = order.Price,
-            Address = order.Address
+            Address = order.Address,
+            Dishes = dishes
         };
 
-        // foreach (var dish in dishes)
-        // {
-        //     view.Dishes.Add(new DishBasketDto
-        //     {
-        //         Id = dish.Id,
-        //         Name = dish.Name,
-        //         Price = dish.Price,
-        //         TotalPrice = dish.TotalPrice,
-        //         Amount = dish.Amount,
-        //         Image = dish.Image
-        //     });
-        // }
-        
-        return view;
+        return orderView;
     }
 
     public OrderInfoDto[] GetListOrders(Guid idUser)
@@ -89,7 +86,7 @@ public class OrderService: IOrderService
             return "bad request";
         }
 
-        Order order = new Order
+        var order = new Order
         {
             UserId = idUser,
             DeliveryTime = model.DeliveryTime,
@@ -117,7 +114,7 @@ public class OrderService: IOrderService
             {
                 OrderId = orderId,
                 DishId = dish.Id,
-                UserId = dish.Id,
+                UserId = dish.UserId,
                 Name = dish.Name,
                 Price = dish.Price,
                 Amount = dish.Amount,
