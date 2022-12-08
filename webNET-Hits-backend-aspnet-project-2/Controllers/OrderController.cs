@@ -102,8 +102,9 @@ public class OrderController: ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public string ConfirmOrderDelivery(int id)
+    public async Task<IActionResult> ConfirmOrderDelivery(Guid id)
     {
-        return "Ok";
+        await _orderService.ConfirmOrderDelivery(id, Guid.Parse(User.Identity.Name));
+        return Ok();
     }
 }

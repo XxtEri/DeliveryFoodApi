@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using webNET_Hits_backend_aspnet_project_2.Enums;
 using webNET_Hits_backend_aspnet_project_2.Models;
 using webNET_Hits_backend_aspnet_project_2.Models.DTO;
@@ -104,6 +105,16 @@ public class OrderService: IOrderService
         AddDishes(dishes, order.Id);
 
         return "ok";
+    }
+
+    public async Task ConfirmOrderDelivery(Guid orderId, Guid userId)
+    {
+        var order = _context.Orders.Find(orderId);
+
+        order.Status = OrderStatus.Delivered;
+        _context.Orders.Entry(order).State = EntityState.Modified;
+
+        _context.SaveChanges();
     }
 
     private void AddDishes(List<DishBasket> dishes, Guid orderId)
