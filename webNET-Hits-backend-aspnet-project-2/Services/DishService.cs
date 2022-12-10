@@ -41,13 +41,14 @@ public class DishService: IDishService
         var items = dishes.Skip((page - 1) * pageSize).Take(pageSize).ToList();
         
         PageInfoModel pageInfoModel = new PageInfoModel(pageSize, count, page);
-        DishPagedListDto? viewModel = new DishPagedListDto()
+        DishPagedListDto viewModel = new DishPagedListDto()
         {
             Dishes = items,
             PageInfoModel = pageInfoModel
         };
         
         return viewModel;
+
     }
     
     public DishDto? GetInformationAboutDish(Guid id)
@@ -66,22 +67,50 @@ public class DishService: IDishService
             Price = dish.Price,
             Image = dish.Image,
             Vegetarian = dish.Vegetarian,
-            Rating = dish.Rating,
+            Rating = GetRatingDish(dish.Rating),
             Category = dish.Category,
             Id = dish.Id
         };
     }
+    
+    public bool CheckSetRating(Guid userId, Guid dishId)
+    {
+        var dish = _context.OrderingDishes
+            .Where(x => x.DishId == dishId && x.UserId == userId)
+            .Select(x => x)
+            .ToList();
 
-    public bool CheckSetRating(Guid idUser, Guid idDish)
-    {
-        return false;
-    }
-    
-    public void SetRating(Guid idUser, Guid idDish, int ratingScore)
-    {
+        if (dish.Count == 0)
+        {
+            return false;
+        }
         
+        return true;
     }
     
+    public void SetRating(Guid userId, Guid dishId, int ratingScore)
+    {
+        var dish = _context.Dishes.Find(dishId);
+
+        if (dish!.Rating == null)
+        {
+            dish.Rating = new List<double>();
+        }
+        
+        dish.Rating.Add(ratingScore);
+        _context.Dishes.Entry(dish).State = EntityState.Modified;
+    }
+
+    private static double GetRatingDish(IReadOnlyCollection<double>? ratingList)
+    {
+        if (ratingList == null || ratingList.Count == 0)
+        {
+            return 0;
+        }
+        
+        return ratingList.Sum() / ratingList.Count;
+    }
+
     private IQueryable<DishDto> GetListDishDto(List<DishCategory> categories, bool vegetarian)
     {
         bool isEmptyCategories = categories.Count == 0 ? true : false;
@@ -95,7 +124,7 @@ public class DishService: IDishService
                         Price = x.Price,
                         Image = x.Image,
                         Vegetarian = x.Vegetarian,
-                        Rating = x.Rating,
+                        Rating = GetRatingDish(x.Rating),
                         Category = x.Category,
                         Id = x.Id
                     }),
@@ -106,7 +135,7 @@ public class DishService: IDishService
                         Price = x.Price,
                         Image = x.Image,
                         Vegetarian = x.Vegetarian,
-                        Rating = x.Rating,
+                        Rating = GetRatingDish(x.Rating),
                         Category = x.Category,
                         Id = x.Id
                     })
@@ -135,7 +164,7 @@ public class DishService: IDishService
             Price = 360,
             Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",
             Vegetarian = true,
-            Rating = 3.5,
+            Rating = new List<double>(),
             Category = DishCategory.Pizza
         });
         _context.Dishes.Add(new Dish
@@ -145,7 +174,7 @@ public class DishService: IDishService
             Price = 480,
             Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",
             Vegetarian = false,
-            Rating = null,
+            Rating = new List<double>(),
             Category = DishCategory.Pizza
         });
         _context.Dishes.Add(new Dish
@@ -155,7 +184,7 @@ public class DishService: IDishService
             Price = 360,
             Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",
             Vegetarian = true,
-            Rating = 3.5,
+            Rating = null,
             Category = DishCategory.Pizza
         });
         _context.Dishes.Add(new Dish
@@ -175,7 +204,7 @@ public class DishService: IDishService
             Price = 360,
             Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",
             Vegetarian = true,
-            Rating = 3.5,
+            Rating = new List<double>(),
             Category = DishCategory.Pizza
         });
         _context.Dishes.Add(new Dish
@@ -195,7 +224,7 @@ public class DishService: IDishService
             Price = 360,
             Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",
             Vegetarian = true,
-            Rating = 3.5,
+            Rating = new List<double>(),
             Category = DishCategory.Pizza
         });
         _context.Dishes.Add(new Dish

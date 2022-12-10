@@ -27,9 +27,9 @@ public class DishController: Controller
     [ProducesResponseType(typeof(DishPagedListDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public IActionResult GetListDishes([FromQuery] List<DishCategory> categories, [DefaultValue(false)] bool vegetarian, SortingDish sorting, [DefaultValue(1)] int page)
+    public async Task<IActionResult> GetListDishes([FromQuery] List<DishCategory> categories, [DefaultValue(false)] bool vegetarian, SortingDish sorting, [DefaultValue(1)] int page)
     {
-        var viewModel = _dishService.GetDishes(categories, vegetarian, sorting, page).Result;
+        var viewModel = await _dishService.GetDishes(categories, vegetarian, sorting, page);
 
         if (viewModel == null)
         {
@@ -76,9 +76,10 @@ public class DishController: Controller
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public IActionResult CheckCurrentUserSetRating(Guid idDish)
+    public IActionResult CheckCurrentUserSetRating(Guid id)
     {
-        return Ok(_dishService.CheckSetRating(Guid.Parse(User.Identity!.Name!), idDish));
+        var userId = Guid.Parse(User.Identity!.Name!);
+        return Ok(_dishService.CheckSetRating(userId, id));
     }
 
     /// <summary>
@@ -92,9 +93,9 @@ public class DishController: Controller
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public IActionResult SetRatingOfDish(Guid idDish, int ratingScore)
+    public IActionResult SetRatingOfDish(Guid id, int ratingScore)
     {
-        _dishService.SetRating(Guid.Parse(User.Identity!.Name!), idDish, ratingScore);
+        _dishService.SetRating(Guid.Parse(User.Identity!.Name!), id, ratingScore);
         return Ok();
     }
 }

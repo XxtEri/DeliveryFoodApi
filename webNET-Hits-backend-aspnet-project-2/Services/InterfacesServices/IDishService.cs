@@ -7,6 +7,6 @@ public interface IDishService
 {
     Task<DishPagedListDto?> GetDishes(List<DishCategory> categories, bool vegetarian, SortingDish sorting, int page);
     DishDto? GetInformationAboutDish(Guid id);
-    bool CheckSetRating(Guid idUser, Guid idDish);
+    bool CheckSetRating(Guid userId, Guid dishId);
     void SetRating(Guid idUser, Guid idDish, int ratingScore);
 }
