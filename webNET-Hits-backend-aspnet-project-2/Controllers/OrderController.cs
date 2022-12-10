@@ -104,7 +104,28 @@ public class OrderController: ControllerBase
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ConfirmOrderDelivery(Guid id)
     {
-        await _orderService.ConfirmOrderDelivery(id, Guid.Parse(User.Identity.Name));
-        return Ok();
+        var userId = Guid.Parse(User.Identity.Name);
+        var response = await _orderService.ConfirmOrderDelivery(id, userId);
+        
+        return response switch
+        {
+            "not found" => NotFound(new Response
+            {
+                Status = "Error",
+                Message = $"Order with id={id} don't in database"
+            }),
+            "forbidden" => StatusCode(403, new Response
+            {
+                Status = "Error",
+                Message = $"User with id={userId} has insufficient rights"
+            }),
+            "bad request" => BadRequest(new Response
+            {
+                Status = "Error",
+                Message = $"Can't update status for order with id={id}"
+            }),
+            
+            "ok" => Ok()
+        };
     }
 }

@@ -8,5 +8,5 @@ public interface IOrderService
     Task<OrderDto>  GetInformationOrder(Guid idOrder);
     OrderInfoDto[] GetListOrders(Guid idUser);
     string CreatingOrderFromBasket(Guid idUser, OrderCreateDto model);
-    Task ConfirmOrderDelivery(Guid orderId, Guid userId);
+    Task<string> ConfirmOrderDelivery(Guid orderId, Guid userId);
 }

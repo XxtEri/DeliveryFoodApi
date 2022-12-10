@@ -107,14 +107,30 @@ public class OrderService: IOrderService
         return "ok";
     }
 
-    public async Task ConfirmOrderDelivery(Guid orderId, Guid userId)
+    public async Task<string> ConfirmOrderDelivery(Guid orderId, Guid userId)
     {
         var order = _context.Orders.Find(orderId);
 
+        if (order == null)
+        {
+            return "not found";
+        }
+
+        if (order.UserId != userId)
+        {
+            return "forbidden";
+        }
+        
+        if (order.Status != OrderStatus.InProcess)
+        {
+            return "bad request";
+        }
+        
         order.Status = OrderStatus.Delivered;
         _context.Orders.Entry(order).State = EntityState.Modified;
 
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
+        return "ok";
     }
 
     private void AddDishes(List<DishBasket> dishes, Guid orderId)
