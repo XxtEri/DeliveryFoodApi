@@ -17,8 +17,6 @@ public class ApplicationDbContext: DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        //TODO: cделать unique и ключи
-
         modelBuilder.Entity<DishBasket>()
             .HasOne(p => p.User)
             .WithMany(c => c.DishBasket);

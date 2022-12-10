@@ -33,7 +33,7 @@ public class BasketService: IBasketService
     {
         var dishBasket = await _context.BasketDishes.FindAsync(dishId);
 
-        if (dishBasket != null)
+        if (dishBasket != null && dishBasket.UserId == userId)
         {
             dishBasket.Amount += 1;
             await _context.SaveChangesAsync();
