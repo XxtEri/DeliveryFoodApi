@@ -1,3 +1,4 @@
+using System.Data.Entity.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using webNET_Hits_backend_aspnet_project_2.Models;
@@ -42,25 +43,24 @@ public class BasketController: ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public IActionResult AddDishToBasket(Guid dishId)
+    public async Task<IActionResult> AddDishToBasket(Guid dishId)
     {
         var userId = Guid.Parse(User.Identity!.Name!);
-        var response = _basketService.AddDishInBasket(userId, dishId).Result;
 
-        return response switch
+        try
         {
-            "not found" => NotFound(new Response
+            await _basketService.AddDishInBasket(userId, dishId);
+        }
+        catch (ObjectNotFoundException e)
+        {
+            return NotFound(new Response
             {
                 Status = "Error",
-                Message = $"The dish with id={dishId} is not on the menu"
-            }),
-            "forbidden" => StatusCode(403, new Response
-            {
-                Status = "Error",
-                Message = $"User with id={userId} has insufficient rights"
-            }),
-            _ => Ok()
-        };
+                Message = e.Message
+            });
+        }
+
+        return Ok();
     }
 
     /// <summary>
@@ -76,21 +76,28 @@ public class BasketController: ControllerBase
     public IActionResult DeleteDishInBasket(Guid dishId, bool increase)
     {
         var userId = Guid.Parse(User.Identity!.Name!);
-        var response = _basketService.DeleteDishOfBasket(userId, dishId, increase).Result;
 
-        return response switch
+        try
         {
-            "not found" => NotFound(new Response
+            _basketService.DeleteDishOfBasket(userId, dishId, increase);
+        }
+        catch (ObjectNotFoundException e)
+        {
+            return NotFound(new Response
             {
                 Status = "Error",
-                Message = $"The dish with id={dishId} is not on the menu"
-            }),
-            "forbidden" => StatusCode(403, new Response
+                Message = e.Message
+            });
+        }
+        catch (Exception e)
+        {
+            return StatusCode(403, new Response
             {
                 Status = "Error",
-                Message = $"User with id={userId} has insufficient rights"
-            }),
-            _ => Ok()
-        };
+                Message = e.Message
+            });
+        }
+
+        return Ok();
     }
 }

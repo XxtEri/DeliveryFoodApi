@@ -1,3 +1,4 @@
+using System.Data.Entity.Core;
 using webNET_Hits_backend_aspnet_project_2.Models;
 using webNET_Hits_backend_aspnet_project_2.Models.DTO;
 using webNET_Hits_backend_aspnet_project_2.Servises.InterfacesServices;
@@ -28,61 +29,56 @@ public class BasketService: IBasketService
                 }).ToArray();
     }
 
-    public async Task<string> AddDishInBasket(Guid idUser, Guid idDish)
+    public async Task AddDishInBasket(Guid userId, Guid dishId)
     {
-        var dishBasket = await _context.BasketDishes.FindAsync(idDish);
-        
-        if (dishBasket != null && dishBasket.UserId != idUser)
-        {
-            return "forbidden";
-            
-        } else if (dishBasket != null)
+        var dishBasket = await _context.BasketDishes.FindAsync(dishId);
+
+        if (dishBasket != null)
         {
             dishBasket.Amount += 1;
             await _context.SaveChangesAsync();
-            return "ok";
-        }
-        
-        var model = await _context.Dishes.FindAsync(idDish);
-        if (model == null)
-        {
-            return "not found in menu";
-        }
             
-        var user = (await _context.Users.FindAsync(idUser))!;
-
-        await _context.BasketDishes.AddAsync(new DishBasket
+        }
+        else
         {
-            Id = model.Id,
-            UserId = user.Id,
-            Name = model!.Name!,
-            Price = model.Price,
-            Amount = 1,
-            Image = model.Image!,
-            User = user,
-            Dish = model
-        });
+            var model = await _context.Dishes.FindAsync(dishId);
+        
+            if (model == null)
+            {
+                throw new ObjectNotFoundException(message: $"The dish with id={dishId} is not on the menu");
+            }
             
-        await _context.SaveChangesAsync();
+            var user = (await _context.Users.FindAsync(userId))!;
 
-        return "ok";
-        
-        
+            await _context.BasketDishes.AddAsync(new DishBasket
+            {
+                Id = model.Id,
+                UserId = user.Id,
+                Name = model!.Name!,
+                Price = model.Price,
+                Amount = 1,
+                Image = model.Image!,
+                User = user,
+                Dish = model
+            });
+            
+            await _context.SaveChangesAsync();   
+        }
     }
 
-    public async Task<string> DeleteDishOfBasket(Guid userId, Guid dishId, bool increase)
+    public async Task DeleteDishOfBasket(Guid userId, Guid dishId, bool increase)
     {
         var dishBasket = await _context.BasketDishes.FindAsync(dishId);
         
         if (dishBasket == null)
         {
-            return "not found";
-            
+            throw new ObjectNotFoundException(message: $"The dish with id={dishId} is not on the menu");
         }
         
         if (dishBasket.UserId != userId)
         {
-            return "forbidden";
+            //forbidden;
+            throw new Exception();
         }
 
         if (increase && dishBasket.Amount > 1)
@@ -95,6 +91,5 @@ public class BasketService: IBasketService
         }
 
         await _context.SaveChangesAsync();
-        return "ok";
     }
 }
