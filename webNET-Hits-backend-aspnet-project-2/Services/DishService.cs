@@ -88,9 +88,9 @@ public class DishService: IDishService
         return true;
     }
     
-    public void SetRating(Guid userId, Guid dishId, int ratingScore)
+    public async Task SetRating(Guid userId, Guid dishId, int ratingScore)
     {
-        var dish = _context.Dishes.Find(dishId);
+        var dish = await _context.Dishes.FindAsync(dishId);
 
         if (dish!.Rating == null)
         {

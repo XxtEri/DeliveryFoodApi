@@ -95,7 +95,8 @@ public class DishController: Controller
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public IActionResult SetRatingOfDish(Guid id, int ratingScore)
     {
-        _dishService.SetRating(Guid.Parse(User.Identity!.Name!), id, ratingScore);
+        var userId = Guid.Parse(User.Identity!.Name!);
+        _dishService.SetRating(userId, id, ratingScore);
         return Ok();
     }
 }
