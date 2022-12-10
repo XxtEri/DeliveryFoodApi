@@ -28,12 +28,6 @@ public class UserService: IUserService
         }
         
         await AddUser(model);
-        
-        var modelLog = new LoginCredentials
-        {
-            Email = model.Email,
-            Password = model.Password
-        };
 
         var token = new TokenResponse
         {
