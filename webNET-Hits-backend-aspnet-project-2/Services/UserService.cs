@@ -73,10 +73,10 @@ public class UserService: IUserService
         };
     }
     
-    public async Task EditProfileUser(Guid id, UserEditModel model)
+    public async Task EditProfileUser(Guid userId, UserEditModel model)
     {
-        IEnumerable<User> users = _context.Users
-            .Where(x => x.Id == id)
+        var users = _context.Users
+            .Where(x => x.Id == userId)
             .AsEnumerable()
             .Select(x =>
                 {
