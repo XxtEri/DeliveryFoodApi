@@ -18,13 +18,13 @@ public class UserService: IUserService
         _context = context;
     }
 
-    public async Task<TokenResponse?> RegisterUser(UserRegisterModel model)
+    public async Task<TokenResponse> RegisterUser(UserRegisterModel model)
     {
         var identity = await GetIdentity(model.Email, model.Password);
 
         if (identity != null)
         {
-            return null;
+            throw new NullReferenceException(message: $"Username {model.Email} is already taken.");
         }
         
         await AddUser(model);
@@ -35,12 +35,7 @@ public class UserService: IUserService
             Password = model.Password
         };
 
-        var token = new TokenResponse
-        {
-            Token = GetEncodeJwtToken(identity)
-        };
-
-        return token;
+        return await LogInUser(modelLog);
     }
 
     public async Task<TokenResponse> LogInUser(LoginCredentials model)

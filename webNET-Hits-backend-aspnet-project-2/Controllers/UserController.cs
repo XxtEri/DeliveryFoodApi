@@ -26,19 +26,19 @@ public class UserController: ControllerBase
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Register([FromBody] UserRegisterModel model)
     {
-        if (!ModelState.IsValid)
+        try
         {
-            return BadRequest();
+            var token = await _userService.RegisterUser(model);
+            return Ok(token);
         }
-
-        var token = _userService.RegisterUser(model).Result;
-        
-        if (token == null)
+        catch (NullReferenceException e)
         {
-            return BadRequest($"Username {model.Email} is already taken.");
+            return BadRequest(new Response
+            {
+                Status = "Error",
+                Message = e.Message
+            });
         }
-
-        return Ok(token);
     }
     
     /// <summary>
