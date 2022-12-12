@@ -29,18 +29,27 @@ public class DishController: Controller
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetListDishes([FromQuery] List<DishCategory> categories, [DefaultValue(false)] bool vegetarian, SortingDish sorting, [DefaultValue(1)] int page)
     {
-        var viewModel = await _dishService.GetDishes(categories, vegetarian, sorting, page);
-
-        if (viewModel == null)
+        try
+        {
+            var viewModel = await _dishService.GetDishes(categories, vegetarian, sorting, page);
+            return Ok(viewModel);
+        }
+        catch (BadHttpRequestException e)
         {
             return BadRequest(new Response
             {
                 Status = "Error",
-                Message = "Invalid value for attribute page"
+                Message = e.Message
             });
         }
-        
-        return Ok(viewModel);
+        catch (Exception e)
+        {
+            return StatusCode(500, new Response
+            {
+                Status = "Error",
+                Message = e.Message
+            });
+        }
     }
 
     /// <summary>
@@ -52,18 +61,27 @@ public class DishController: Controller
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public IActionResult GetInformationConcreteDish(Guid id)
     {
-        var dish = _dishService.GetInformationAboutDish(id);
-
-        if (dish == null)
+        try
+        {
+            var dish = _dishService.GetInformationAboutDish(id);
+            return Ok(dish);
+        }
+        catch (NullReferenceException e)
         {
             return NotFound(new Response
             {
                 Status = "Error",
-                Message = "Dish with id=ffb38534-8e00-4a68-9cc7-024079ecc076 don't in database"
+                Message = e.Message
             });
         }
-
-        return Ok(dish);
+        catch (Exception e)
+        {
+            return StatusCode(500, new Response
+            {
+                Status = "Error",
+                Message = e.Message
+            });
+        }
     }
     
     /// <summary>
@@ -78,8 +96,18 @@ public class DishController: Controller
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public IActionResult CheckCurrentUserSetRating(Guid id)
     {
-        var userId = Guid.Parse(User.Identity!.Name!);
-        return Ok(_dishService.CheckSetRating(userId, id));
+        try
+        {
+            return Ok(_dishService.CheckSetRating(Guid.Parse(User.Identity!.Name!), id));
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, new Response
+            {
+                Status = "Error",
+                Message = e.Message
+            });
+        }
     }
 
     /// <summary>
@@ -95,8 +123,18 @@ public class DishController: Controller
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public IActionResult SetRatingOfDish(Guid id, int ratingScore)
     {
-        var userId = Guid.Parse(User.Identity!.Name!);
-        _dishService.SetRating(userId, id, ratingScore);
-        return Ok();
+        try
+        {
+            _dishService.SetRating(Guid.Parse(User.Identity!.Name!), id, ratingScore);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, new Response
+            {
+                Status = "Error",
+                Message = e.Message
+            });
+        }
     }
 }
