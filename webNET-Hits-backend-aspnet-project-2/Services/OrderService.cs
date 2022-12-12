@@ -1,3 +1,4 @@
+using System.Data.Entity.Core;
 using Microsoft.EntityFrameworkCore;
 using webNET_Hits_backend_aspnet_project_2.Enums;
 using webNET_Hits_backend_aspnet_project_2.Models;
@@ -15,26 +16,19 @@ public class OrderService: IOrderService
         _context = context;
     }
 
-    public async Task<string> CheckErrors(Guid idOrder, Guid idUser)
+    public async Task<OrderDto> GetInformationOrder(Guid orderId, Guid userId)
     {
-        var order = await _context.Orders.FindAsync(idOrder);
+        var order = await _context.Orders.FindAsync(orderId);
 
         if (order == null)
         {
-            return "not found";
+            throw new ObjectNotFoundException(message: $"The order with id={orderId} is not on found");
         }
 
-        if (order.UserId != idUser)
+        if (order.UserId != userId)
         {
-            return "forbidden";
+            throw new Exception(message: $"User with id={userId} has insufficient rights");
         }
-
-        return "ok";
-    }
-
-    public async Task<OrderDto> GetInformationOrder(Guid idOrder)
-    {
-        var order = await _context.Orders.FindAsync(idOrder);
 
         var dishes = _context.OrderingDishes
             .Where(x => x.OrderId == order.Id && x.UserId == order.UserId)
@@ -76,20 +70,20 @@ public class OrderService: IOrderService
             }).ToArray();
     }
 
-    public string CreatingOrderFromBasket(Guid idUser, OrderCreateDto model)
+    public async Task CreatingOrderFromBasket(Guid userId, OrderCreateDto model)
     {
         var dishes = _context.BasketDishes
-            .Where(x => x.UserId == idUser)
+            .Where(x => x.UserId == userId)
             .ToList();
 
         if (dishes.Count == 0)
         {
-            return "bad request";
+            throw new ObjectNotFoundException(message: $"Empty basket for user with id={userId}");
         }
 
         var order = new Order
         {
-            UserId = idUser,
+            UserId = userId,
             DeliveryTime = model.DeliveryTime,
             OrderTime = DateTime.Now.ToString(),
             Address = model.Address,
@@ -98,39 +92,35 @@ public class OrderService: IOrderService
         };
         
         _context.Orders.Add(order);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
         
         ClearBasket(dishes);
-        
         AddDishes(dishes, order.Id);
-
-        return "ok";
     }
 
-    public async Task<string> ConfirmOrderDelivery(Guid orderId, Guid userId)
+    public async Task ConfirmOrderDelivery(Guid orderId, Guid userId)
     {
         var order = _context.Orders.Find(orderId);
 
         if (order == null)
         {
-            return "not found";
+            throw new ObjectNotFoundException(message: $"Order with id={orderId} don't in database");
         }
 
         if (order.UserId != userId)
         {
-            return "forbidden";
+            throw new Exception(message: $"User with id={userId} has insufficient rights");
         }
         
         if (order.Status != OrderStatus.InProcess)
         {
-            return "bad request";
+            throw new BadHttpRequestException(message: $"Can't update status for order with id={orderId}");
         }
         
         order.Status = OrderStatus.Delivered;
         _context.Orders.Entry(order).State = EntityState.Modified;
 
         await _context.SaveChangesAsync();
-        return "ok";
     }
 
     private void AddDishes(List<DishBasket> dishes, Guid orderId)

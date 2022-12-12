@@ -1,3 +1,4 @@
+using System.Data.Entity.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using webNET_Hits_backend_aspnet_project_2.Models;
@@ -30,23 +31,37 @@ public class OrderController: ControllerBase
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetInformationOrder(Guid id)
     {
-        var idUser = Guid.Parse(User.Identity!.Name!);
-        var response = await _orderService.CheckErrors(id, idUser);
+        var userId = Guid.Parse(User.Identity!.Name!);
 
-        return response switch
+        try
         {
-            "not found" => NotFound(new Response
+            var order = await _orderService.GetInformationOrder(id, userId);
+            return Ok(order);
+        }
+        catch (ObjectNotFoundException e)
+        {
+            return NotFound(new Response
             {
                 Status = "Error",
-                Message = $"Order with id={id} don't in database"
-            }),
-            "forbidden" => StatusCode(403, new Response
+                Message = e.Message
+            });
+        }
+        catch (Exception e)
+        {
+            return StatusCode(403, new Response
             {
                 Status = "Error",
-                Message = $"User with id={idUser} has insufficient rights"
-            }),  
-            "ok" => Ok(await _orderService.GetInformationOrder(id))
-        };
+                Message = e.Message
+            });
+        }
+        catch
+        {
+            return StatusCode(500, new Response
+            {
+                Status = "Error",
+                Message = "Unknown error"
+            });
+        }
     }
 
     /// <summary>
@@ -61,7 +76,19 @@ public class OrderController: ControllerBase
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public IActionResult GetListOrders()
     {
-        return Ok(_orderService.GetListOrders(Guid.Parse(User.Identity!.Name!)));
+        try
+        {
+            var orders = _orderService.GetListOrders(Guid.Parse(User.Identity!.Name!));
+            return Ok(orders);
+        }
+        catch
+        {
+            return StatusCode(500, new Response
+            {
+                Status = "Error",
+                Message = "Unknown error"
+            });
+        }
     }
 
     /// <summary>
@@ -78,17 +105,27 @@ public class OrderController: ControllerBase
     public IActionResult CreateOrder([FromBody] OrderCreateDto model)
     {
         var idUser = Guid.Parse(User.Identity!.Name!);
-        var response = _orderService.CreatingOrderFromBasket(idUser, model);
-
-        return response switch
+        try
         {
-            "bad request" => BadRequest(new Response
+            _orderService.CreatingOrderFromBasket(idUser, model);
+            return Ok();
+        }
+        catch (ObjectNotFoundException e)
+        {
+            return NotFound(new Response
             {
                 Status = "Error",
-                Message = $"Empty basket for user with id={idUser}"
-            }),
-            "ok" => Ok()
-        };
+                Message = e.Message
+            });
+        }
+        catch
+        {
+            return StatusCode(500, new Response
+            {
+                Status = "Error",
+                Message = "Unknown error"
+            });
+        }
     }
 
     /// <summary>
@@ -105,27 +142,43 @@ public class OrderController: ControllerBase
     public async Task<IActionResult> ConfirmOrderDelivery(Guid id)
     {
         var userId = Guid.Parse(User.Identity.Name);
-        var response = await _orderService.ConfirmOrderDelivery(id, userId);
-        
-        return response switch
+
+        try
         {
-            "not found" => NotFound(new Response
+            await _orderService.ConfirmOrderDelivery(id, userId);
+            return Ok();
+        }
+        catch (ObjectNotFoundException e)
+        {
+            return NotFound(new Response
             {
                 Status = "Error",
-                Message = $"Order with id={id} don't in database"
-            }),
-            "forbidden" => StatusCode(403, new Response
+                Message = e.Message
+            });
+        }
+        catch (BadHttpRequestException e)
+        {
+            return BadRequest(new Response
             {
                 Status = "Error",
-                Message = $"User with id={userId} has insufficient rights"
-            }),
-            "bad request" => BadRequest(new Response
+                Message = e.Message
+            });
+        }
+        catch (Exception e)
+        {
+            return StatusCode(403, new Response
             {
                 Status = "Error",
-                Message = $"Can't update status for order with id={id}"
-            }),
-            
-            "ok" => Ok()
-        };
+                Message = e.Message
+            });
+        }
+        catch
+        {
+            return StatusCode(500, new Response
+            {
+                Status = "Error",
+                Message = "Unknown error"
+            });
+        }
     }
 }

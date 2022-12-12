@@ -28,9 +28,20 @@ public class BasketController: ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public IEnumerable<DishBasketDto> GetDishesInBasket()
+    public IActionResult GetDishesInBasket()
     {
-        return _basketService.GetBasketDishes(Guid.Parse(User.Identity!.Name!));
+        try
+        {
+            return Ok(_basketService.GetBasketDishes(Guid.Parse(User.Identity!.Name!)));
+        }
+        catch
+        {
+            return StatusCode(500, new Response
+            {
+                Status = "Error",
+                Message = "Unknown error"
+            });
+        }
     }
 
     /// <summary>
@@ -50,6 +61,7 @@ public class BasketController: ControllerBase
         try
         {
             await _basketService.AddDishInBasket(userId, dishId);
+            return Ok();
         }
         catch (ObjectNotFoundException e)
         {
@@ -59,8 +71,14 @@ public class BasketController: ControllerBase
                 Message = e.Message
             });
         }
-
-        return Ok();
+        catch
+        {
+            return StatusCode(500, new Response
+            {
+                Status = "Error",
+                Message = "Unknown error"
+            });
+        }
     }
 
     /// <summary>
@@ -80,6 +98,7 @@ public class BasketController: ControllerBase
         try
         {
             _basketService.DeleteDishOfBasket(userId, dishId, increase);
+            return Ok();
         }
         catch (ObjectNotFoundException e)
         {
@@ -97,7 +116,5 @@ public class BasketController: ControllerBase
                 Message = e.Message
             });
         }
-
-        return Ok();
     }
 }

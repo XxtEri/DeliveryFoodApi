@@ -4,9 +4,8 @@ namespace webNET_Hits_backend_aspnet_project_2.Servises.InterfacesServices;
 
 public interface IOrderService
 {
-    Task<string> CheckErrors(Guid idOrder, Guid idUser);
-    Task<OrderDto>  GetInformationOrder(Guid idOrder);
+    Task<OrderDto>  GetInformationOrder(Guid orderId, Guid userId);
     OrderInfoDto[] GetListOrders(Guid idUser);
-    string CreatingOrderFromBasket(Guid idUser, OrderCreateDto model);
-    Task<string> ConfirmOrderDelivery(Guid orderId, Guid userId);
+    Task CreatingOrderFromBasket(Guid idUser, OrderCreateDto model);
+    Task ConfirmOrderDelivery(Guid orderId, Guid userId);
 }
