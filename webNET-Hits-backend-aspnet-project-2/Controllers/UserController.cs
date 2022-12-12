@@ -52,18 +52,19 @@ public class UserController: ControllerBase
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Login([FromBody] LoginCredentials model)
     {
-        var token = await _userService.LogInUser(model);
-
-        if (token.Token == null)
+        try
+        {
+            var token = await _userService.LogInUser(model);
+            return Ok(token);
+        }
+        catch (NullReferenceException e)
         {
             return BadRequest(new Response
             {
                 Status = "Error",
-                Message = "Login or password Failed"
+                Message = e.Message
             });
         }
-        
-        return Ok(token);
     }
 
     /// <summary>
@@ -93,9 +94,19 @@ public class UserController: ControllerBase
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetUserProfile()
     {
-        var user = await _userService.GetProfileUser(Guid.Parse(User.Identity!.Name!));
-
-        return Ok(user);
+        try
+        {
+            await _userService.GetProfileUser(Guid.Parse(User.Identity!.Name!));
+            return Ok();
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new Response
+            {
+                Status = "Error",
+                Message = "Unknown error"
+            });
+        }
     }
 
     /// <summary>
@@ -110,12 +121,18 @@ public class UserController: ControllerBase
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> EditUserProfile([FromBody] UserEditModel model)
     {
-        if (!ModelState.IsValid)
+        try
         {
-            return BadRequest();
+            await _userService.EditProfileUser(Guid.Parse(User.Identity!.Name!), model);
+            return Ok();
         }
-
-        await _userService.EditProfileUser(Guid.Parse(User.Identity!.Name!), model);
-        return Ok();
+        catch (Exception)
+        {
+            return StatusCode(500, new Response
+            {
+                Status = "Error",
+                Message = "Unknown error"
+            });
+        }
     }
 }

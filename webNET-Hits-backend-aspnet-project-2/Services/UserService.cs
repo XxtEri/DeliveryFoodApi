@@ -44,18 +44,13 @@ public class UserService: IUserService
 
         if (identity == null)
         {
-            return new TokenResponse
-            {
-                Token = null
-            };
+            throw new NullReferenceException(message: "Login or password Failed");
         }
 
-        var token = new TokenResponse
+        return new TokenResponse
         {
             Token = GetEncodeJwtToken(identity)
         };
-
-        return token;
     }
 
     public async Task<UserDto> GetProfileUser(Guid id)
