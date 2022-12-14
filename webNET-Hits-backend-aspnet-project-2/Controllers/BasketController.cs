@@ -34,12 +34,12 @@ public class BasketController: ControllerBase
         {
             return Ok(_basketService.GetBasketDishes(Guid.Parse(User.Identity!.Name!)));
         }
-        catch
+        catch (Exception e)
         {
             return StatusCode(500, new Response
             {
                 Status = "Error",
-                Message = "Unknown error"
+                Message = e.Message
             });
         }
     }
