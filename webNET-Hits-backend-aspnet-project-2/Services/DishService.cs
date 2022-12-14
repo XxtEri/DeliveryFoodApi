@@ -14,10 +14,6 @@ public class DishService: IDishService
     public DishService(ApplicationDbContext context)
     {
         _context = context;
-        if (!_context.Dishes.Any())
-        {
-            AddDishes();
-        }
     }
 
     public async Task<DishPagedListDto> GetDishes(List<DishCategory> categories, bool vegetarian, SortingDish sorting, int page)
@@ -187,91 +183,5 @@ public class DishService: IDishService
             SortingDish.RatingDesk => dishes.OrderByDescending(s => s.Rating),
             _ => dishes.OrderBy(s => s.Name)
         };
-    }
-
-    private void AddDishes()
-    {
-        _context.Dishes.Add(new Dish
-        {
-            Name = "A4 сыра",
-            Description = "4 сыра: «Моцарелла», «Гауда», «Фета», «Дор-блю», сливочно-сырный соус, пряные травы",
-            Price = 360,
-            Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",
-            Vegetarian = true,
-            Rating = new double(),
-            Category = DishCategory.Pizza
-        });
-        _context.Dishes.Add(new Dish
-        {
-            Name = "Party BBQ",
-            Description = "Бекон, соленый огурчик, брусника, сыр «Моцарелла», сыр «Гауда», соус BBQ",
-            Price = 480,
-            Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",
-            Vegetarian = false,
-            Rating = null,
-            Category = DishCategory.Pizza
-        });
-        _context.Dishes.Add(new Dish
-        {
-            Name = "B сыра",
-            Description = "4 сыра: «Моцарелла», «Гауда», «Фета», «Дор-блю», сливочно-сырный соус, пряные травы",
-            Price = 360,
-            Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",
-            Vegetarian = true,
-            Rating = 3.5,
-            Category = DishCategory.Pizza
-        });
-        _context.Dishes.Add(new Dish
-        {
-            Name = "Psdarty BBQ",
-            Description = "Бекон, соленый огурчик, брусника, сыр «Моцарелла», сыр «Гауда», соус BBQ",
-            Price = 480,
-            Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",
-            Vegetarian = false,
-            Rating = null,
-            Category = DishCategory.Pizza
-        });
-        _context.Dishes.Add(new Dish
-        {
-            Name = "4f сыра",
-            Description = "4 сыра: «Моцарелла», «Гауда», «Фета», «Дор-блю», сливочно-сырный соус, пряные травы",
-            Price = 360,
-            Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",
-            Vegetarian = true,
-            Rating = 3.5,
-            Category = DishCategory.Pizza
-        });
-        _context.Dishes.Add(new Dish
-        {
-            Name = "Party BBQ",
-            Description = "Бекон, соленый огурчик, брусника, сыр «Моцарелла», сыр «Гауда», соус BBQ",
-            Price = 480,
-            Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",
-            Vegetarian = false,
-            Rating = null,
-            Category = DishCategory.Pizza
-        });
-        _context.Dishes.Add(new Dish
-        {
-            Name = "4a сыра",
-            Description = "4 сыра: «Моцарелла», «Гауда», «Фета», «Дор-блю», сливочно-сырный соус, пряные травы",
-            Price = 360,
-            Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",
-            Vegetarian = true,
-            Rating = 3.5,
-            Category = DishCategory.Pizza
-        });
-        _context.Dishes.Add(new Dish
-        {
-            Name = "Party BBQ",
-            Description = "Бекон, соленый огурчик, брусника, сыр «Моцарелла», сыр «Гауда», соус BBQ",
-            Price = 480,
-            Image = "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.",
-            Vegetarian = false,
-            Rating = null,
-            Category = DishCategory.Pizza
-        });
-
-        _context.SaveChanges();
     }
 }
