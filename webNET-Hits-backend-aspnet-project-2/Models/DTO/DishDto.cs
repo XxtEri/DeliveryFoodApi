@@ -10,7 +10,7 @@ public class DishDto
     
     [MinLength(1)]
     [Required]
-    public string? Name { get; set; }
+    public string Name { get; set; }
     
     [MaybeNull]
     public string Description { get; set; }

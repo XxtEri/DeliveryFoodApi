@@ -89,8 +89,7 @@ public class OrderController: ControllerBase
         try
         {
             _tokenService.CheckAccessToken(Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", ""));
-            var orders = _orderService.GetListOrders(Guid.Parse(User.Identity!.Name!));
-            return Ok(orders);
+            return Ok(_orderService.GetListOrders(Guid.Parse(User.Identity!.Name!)));
         }
         catch (UnauthorizedAccessException)
         {
@@ -121,7 +120,7 @@ public class OrderController: ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public IActionResult CreateOrder([FromBody] OrderCreateDto model)
+    public async Task<IActionResult> CreateOrder([FromBody] OrderCreateDto model)
     {
         if (!ModelState.IsValid)
         {
@@ -137,7 +136,7 @@ public class OrderController: ControllerBase
         {
             _tokenService.CheckAccessToken(Request.Headers[HeaderNames.Authorization].ToString()
                 .Replace("Bearer ", ""));
-            _orderService.CreatingOrderFromBasket(idUser, model);
+            await _orderService.CreatingOrderFromBasket(idUser, model);
             return Ok();
         }
         catch (UnauthorizedAccessException)

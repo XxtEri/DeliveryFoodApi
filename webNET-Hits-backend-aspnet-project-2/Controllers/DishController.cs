@@ -64,13 +64,14 @@ public class DishController: Controller
     [ProducesResponseType(typeof(DishDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public IActionResult GetInformationConcreteDish(Guid id)
+    public async Task<IActionResult> GetInformationConcreteDish(Guid id)
     {
         try
         {
-            return Ok(_dishService.GetInformationAboutDish(id));
+            var dish = await _dishService.GetInformationAboutDish(id);
+            return Ok(dish);
         }
-        catch (NullReferenceException e)
+        catch (ObjectNotFoundException e)
         {
             return NotFound(new Response
             {

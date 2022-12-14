@@ -109,12 +109,12 @@ public class BasketController: ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public IActionResult DeleteDishInBasket(Guid dishId, bool increase)
+    public async Task<IActionResult> DeleteDishInBasket(Guid dishId, bool increase)
     {
         try
         {
             _tokenService.CheckAccessToken(Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", ""));
-            _basketService.DeleteDishOfBasket(Guid.Parse(User.Identity!.Name!), dishId, increase);
+            await _basketService.DeleteDishOfBasket(Guid.Parse(User.Identity!.Name!), dishId, increase);
             return Ok();
         }
         catch (UnauthorizedAccessException)

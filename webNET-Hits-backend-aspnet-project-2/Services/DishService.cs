@@ -29,7 +29,7 @@ public class DishService: IDishService
 
         var pageSize = 5;
         var countDishes = await dishes.CountAsync();
-        var count = countDishes % pageSize < pageSize ? countDishes / 5 + 1 : countDishes / 5;
+        var count = countDishes % pageSize < pageSize && countDishes % pageSize != 0 ? countDishes / 5 + 1 : countDishes / 5;
 
         if (page > count)
         {
@@ -45,25 +45,25 @@ public class DishService: IDishService
         };
     }
     
-    public DishDto GetInformationAboutDish(Guid dishId)
+    public async Task<DishDto> GetInformationAboutDish(Guid dishId)
     {
-        var dish = _context.Dishes.Find(dishId);
+        var dish = await _context.Dishes.FindAsync(dishId);
 
         if (dish == null)
         {
-            throw new NullReferenceException(message: $"Dish with id = {dishId} don't in database");
+            throw new ObjectNotFoundException(message: $"Dish with id = {dishId} don't in database");
         }
         
         return new DishDto
         {
+            Id = dish.Id,
             Name = dish.Name,
             Description = dish.Description,
             Price = dish.Price,
             Image = dish.Image,
             Vegetarian = dish.Vegetarian,
-            Rating = dish.Rating,
-            Category = dish.Category,
-            Id = dish.Id
+            Rating = dish.Rating ?? 0,
+            Category = dish.Category
         };
     }
     
