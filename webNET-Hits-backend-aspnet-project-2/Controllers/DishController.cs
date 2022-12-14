@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Data.Entity.Core;
 using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Authorization;
@@ -140,7 +141,7 @@ public class DishController: Controller
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public IActionResult SetRatingOfDish(Guid id, int ratingScore)
+    public IActionResult SetRatingOfDish(Guid id, [Range(0,10)] int ratingScore)
     {
         try
         {

@@ -22,6 +22,11 @@ public class DishService: IDishService
 
     public async Task<DishPagedListDto> GetDishes(List<DishCategory> categories, bool vegetarian, SortingDish sorting, int page)
     {
+        if (page < 1)
+        {
+            throw new BadHttpRequestException(message: "Page value must be greater than 0");
+        }
+        
         var dishes = GetListDishDto(categories, vegetarian);
         
         dishes = SortingDishes(dishes, sorting);
