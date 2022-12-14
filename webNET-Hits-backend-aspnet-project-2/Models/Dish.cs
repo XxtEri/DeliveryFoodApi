@@ -21,12 +21,7 @@ public class Dish
     
     public bool Vegetarian { get; set; }
     
-    public List<double> Rating { get; set; }
+    public double? Rating { get; set; }
     
     public DishCategory Category { get; set; }
-
-    public Dish()
-    {
-        Rating = new List<double>();
-    }
 }

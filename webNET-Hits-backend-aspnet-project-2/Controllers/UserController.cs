@@ -55,6 +55,7 @@ public class UserController: ControllerBase
         try
         {
             var token = await _userService.LogInUser(model);
+
             return Ok(token);
         }
         catch (NullReferenceException e)

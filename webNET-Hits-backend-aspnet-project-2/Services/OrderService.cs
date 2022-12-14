@@ -92,10 +92,11 @@ public class OrderService: IOrderService
         };
         
         _context.Orders.Add(order);
-        await _context.SaveChangesAsync();
-        
+
         ClearBasket(dishes);
         AddDishes(dishes, order.Id);
+        
+        await _context.SaveChangesAsync();
     }
 
     public async Task ConfirmOrderDelivery(Guid orderId, Guid userId)

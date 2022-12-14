@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Data.Entity.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using webNET_Hits_backend_aspnet_project_2.Enums;
@@ -127,6 +128,22 @@ public class DishController: Controller
         {
             _dishService.SetRating(Guid.Parse(User.Identity!.Name!), id, ratingScore);
             return Ok();
+        }
+        catch (ObjectNotFoundException e)
+        {
+            return NotFound(new Response
+            {
+                Status = "Error",
+                Message = e.Message
+            });
+        }
+        catch (NullReferenceException e)
+        {
+            return StatusCode(403, new Response
+            {
+                Status = "Error",
+                Message = e.Message
+            });
         }
         catch (Exception e)
         {

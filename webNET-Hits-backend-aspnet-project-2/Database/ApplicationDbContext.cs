@@ -9,6 +9,8 @@ public class ApplicationDbContext: DbContext
     public DbSet<DishBasket> BasketDishes { get; set; }
     public DbSet<OrderingDish> OrderingDishes { get; set; }
     public DbSet<Order> Orders { get; set; }
+    public DbSet<DisactiveToken> DisactiveTokens { get; set; }
+    public DbSet<RatingUser> RatingUsers { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options)
     {
@@ -27,5 +29,8 @@ public class ApplicationDbContext: DbContext
         
         modelBuilder.Entity<DishBasket>()
             .HasOne(p => p.Dish);
+
+        modelBuilder.Entity<RatingUser>()
+            .HasKey(x => new { x.UserId, x.DishId});
     }
 }
