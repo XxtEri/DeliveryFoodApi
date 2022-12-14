@@ -89,12 +89,12 @@ public class OrderService: IOrderService
         
         var order = new Order
         {
-            UserId = userId,
             DeliveryTime = model.DeliveryTime,
             OrderTime = DateTime.Now.ToString(),
             Address = model.Address,
             Status = OrderStatus.InProcess,
-            Price = SumPriceDishes(dishes)
+            Price = SumPriceDishes(dishes),
+            User = _context.Users.Find(userId)!
         };
         
         _context.Orders.Add(order);
@@ -142,7 +142,8 @@ public class OrderService: IOrderService
                 Name = dish.Name,
                 Price = dish.Price,
                 Amount = dish.Amount,
-                Image = dish.Image
+                Image = dish.Image,
+                Order = _context.Orders.Find(orderId)!
             });
             
             _context.SaveChanges();

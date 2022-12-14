@@ -54,7 +54,6 @@ public class BasketService: IBasketService
             await _context.BasketDishes.AddAsync(new DishBasket
             {
                 Id = model.Id,
-                UserId = user.Id,
                 Name = model!.Name!,
                 Price = model.Price,
                 Amount = 1,
