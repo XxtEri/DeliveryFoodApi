@@ -41,19 +41,12 @@ builder.Services.AddAuthentication(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            //валидация издателя при валидации токена
             ValidateIssuer = true,
-            //строка, представляющая издателя
             ValidIssuer = JwtConfigurations.Issuer,
-            //валидация потребителя токена
             ValidateAudience = true,
-            //установка потребителя токена
             ValidAudience = JwtConfigurations.Audience,
-            //валидация времени существования
             ValidateLifetime = true,
-            //установка ключа безопасности
             IssuerSigningKey = JwtConfigurations.GetSymmetricSecurityKey(),
-            //валидация ключа безопасности
             ValidateIssuerSigningKey = true,
             LifetimeValidator = ((before, expires, token, parameters) => true)
         };
@@ -64,10 +57,11 @@ builder.Services.AddScoped<IDishService, DishService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBasketService, BasketService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddHostedService<HostedTokenService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

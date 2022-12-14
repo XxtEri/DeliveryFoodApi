@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using webNET_Hits_backend_aspnet_project_2.Models;
 using webNET_Hits_backend_aspnet_project_2.Servises.InterfacesServices;
 
@@ -11,10 +12,12 @@ namespace webNET_Hits_backend_aspnet_project_2.Controllers;
 public class UserController: ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly ITokenService _tokenService;
 
-    public UserController(IUserService userService)
+    public UserController(IUserService userService, ITokenService tokenService)
     {
         _userService = userService;
+        _tokenService = tokenService;
     }
 
     /// <summary>
@@ -55,7 +58,6 @@ public class UserController: ControllerBase
         try
         {
             var token = await _userService.LogInUser(model);
-
             return Ok(token);
         }
         catch (NullReferenceException e)
@@ -76,12 +78,36 @@ public class UserController: ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
-    public string Logout()
+    public async Task<IActionResult> Logout()
     {
-        return "ok";
-        //добавить токен в базу данных действующих, но неиспользуемых токенов
+        try
+        {
+            var token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            _tokenService.CheckAccessToken(token);
+            await _userService.LogOut(token);
+            return StatusCode(200, new Response
+            {
+                Status = null,
+                Message = "Logged out"
+            });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Unauthorized(new Response
+            {
+                Status = "Error",
+                Message = "User is not authorized"
+            });
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, new Response
+            {
+                Status = "error",
+                Message = e.Message
+            });
+        }
     }
 
     /// <summary>
@@ -91,21 +117,28 @@ public class UserController: ControllerBase
     [Authorize]
     [ProducesResponseType(typeof(UserEditModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetUserProfile()
     {
         try
         {
-            await _userService.GetProfileUser(Guid.Parse(User.Identity!.Name!));
-            return Ok();
+            _tokenService.CheckAccessToken(Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", ""));
+            return Ok(await _userService.GetProfileUser(Guid.Parse(User.Identity!.Name!)));
         }
-        catch (Exception)
+        catch (UnauthorizedAccessException)
+        {
+            return Unauthorized(new Response
+            {
+                Status = "Error",
+                Message = "User is not authorized"
+            });
+        }
+        catch (Exception e)
         {
             return StatusCode(500, new Response
             {
                 Status = "Error",
-                Message = "Unknown error"
+                Message = e.Message
             });
         }
     }
@@ -118,21 +151,29 @@ public class UserController: ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> EditUserProfile([FromBody] UserEditModel model)
     {
         try
         {
+            _tokenService.CheckAccessToken(Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", ""));
             await _userService.EditProfileUser(Guid.Parse(User.Identity!.Name!), model);
             return Ok();
         }
-        catch (Exception)
+        catch (UnauthorizedAccessException)
+        {
+            return Unauthorized(new Response
+            {
+                Status = "Error",
+                Message = "User is not authorized"
+            });
+        }
+        catch (Exception e)
         {
             return StatusCode(500, new Response
             {
                 Status = "Error",
-                Message = "Unknown error"
+                Message = e.Message
             });
         }
     }

@@ -92,17 +92,15 @@ public class UserService: IUserService
         await _context.SaveChangesAsync();
     }
 
-    public void LogOut(Guid userId)
+    public async Task LogOut(string token)
     {
-        // _context.DisactiveTokens.Add(new DisactiveToken
-        // {
-        //     User = _context.Users.Find(userId)!,
-        //     Token = token.Token
-        // });
-        // if (await _context.ActiveTokens.FindAsync(userId) != null)
-        // {
-        //     throw new NullReferenceException(message: "Unauthorized");
-        // }
+        await _context.DisactiveTokens.AddAsync(new DisactiveToken
+        {
+            Token = token,
+            TimeLogOut = DateTime.UtcNow
+        });
+
+        await _context.SaveChangesAsync();
     }
 
     private string GetEncodeJwtToken(ClaimsIdentity? identity)

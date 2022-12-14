@@ -1,4 +1,5 @@
 using System.Data.Entity.Core;
+using System.Runtime.InteropServices;
 using Microsoft.EntityFrameworkCore;
 using webNET_Hits_backend_aspnet_project_2.Enums;
 using webNET_Hits_backend_aspnet_project_2.Models;
@@ -27,7 +28,7 @@ public class OrderService: IOrderService
 
         if (order.UserId != userId)
         {
-            throw new Exception(message: $"User with id={userId} has insufficient rights");
+            throw new ExternalException(message: $"User with id={userId} has insufficient rights");
         }
 
         var dishes = _context.OrderingDishes

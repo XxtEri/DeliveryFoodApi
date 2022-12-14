@@ -1,7 +1,9 @@
 using System.ComponentModel;
 using System.Data.Entity.Core;
+using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using webNET_Hits_backend_aspnet_project_2.Enums;
 using webNET_Hits_backend_aspnet_project_2.Models;
 using webNET_Hits_backend_aspnet_project_2.Models.DTO;
@@ -15,10 +17,12 @@ namespace webNET_Hits_backend_aspnet_project_2.Controllers;
 public class DishController: Controller
 {
     private readonly IDishService _dishService;
+    private readonly ITokenService _tokenService;
 
-    public DishController(IDishService dishService)
+    public DishController(IDishService dishService, ITokenService tokenService)
     {
         _dishService = dishService;
+        _tokenService = tokenService;
     }
 
     /// <summary>
@@ -32,8 +36,7 @@ public class DishController: Controller
     {
         try
         {
-            var viewModel = await _dishService.GetDishes(categories, vegetarian, sorting, page);
-            return Ok(viewModel);
+            return Ok(await _dishService.GetDishes(categories, vegetarian, sorting, page));
         }
         catch (BadHttpRequestException e)
         {
@@ -64,8 +67,7 @@ public class DishController: Controller
     {
         try
         {
-            var dish = _dishService.GetInformationAboutDish(id);
-            return Ok(dish);
+            return Ok(_dishService.GetInformationAboutDish(id));
         }
         catch (NullReferenceException e)
         {
@@ -92,14 +94,31 @@ public class DishController: Controller
     [Authorize]
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public IActionResult CheckCurrentUserSetRating(Guid id)
     {
         try
         {
+            _tokenService.CheckAccessToken(Request.Headers[HeaderNames.Authorization].ToString()
+                .Replace("Bearer ", ""));
             return Ok(_dishService.CheckSetRating(Guid.Parse(User.Identity!.Name!), id));
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Unauthorized(new Response
+            {
+                Status = "Error",
+                Message = "User is not authorized"
+            });
+        }
+        catch (ObjectNotFoundException e)
+        {
+            return NotFound(new Response
+            {
+                Status = "Error",
+                Message = e.Message
+            });
         }
         catch (Exception e)
         {
@@ -119,15 +138,23 @@ public class DishController: Controller
     [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public IActionResult SetRatingOfDish(Guid id, int ratingScore)
     {
         try
         {
+            _tokenService.CheckAccessToken(Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", ""));
             _dishService.SetRating(Guid.Parse(User.Identity!.Name!), id, ratingScore);
             return Ok();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Unauthorized(new Response
+            {
+                Status = "Error",
+                Message = "User is not authorized"
+            });
         }
         catch (ObjectNotFoundException e)
         {
@@ -137,7 +164,7 @@ public class DishController: Controller
                 Message = e.Message
             });
         }
-        catch (NullReferenceException e)
+        catch (ExternalException e)
         {
             return StatusCode(403, new Response
             {

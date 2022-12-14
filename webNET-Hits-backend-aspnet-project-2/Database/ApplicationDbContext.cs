@@ -6,10 +6,10 @@ public class ApplicationDbContext: DbContext
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Dish> Dishes { get; set; }
+    public DbSet<DisactiveToken> DisactiveTokens { get; set; }
     public DbSet<DishBasket> BasketDishes { get; set; }
     public DbSet<OrderingDish> OrderingDishes { get; set; }
     public DbSet<Order> Orders { get; set; }
-    public DbSet<DisactiveToken> DisactiveTokens { get; set; }
     public DbSet<RatingUser> RatingUsers { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options)

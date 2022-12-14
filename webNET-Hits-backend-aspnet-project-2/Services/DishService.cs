@@ -68,6 +68,11 @@ public class DishService: IDishService
     
     public bool CheckSetRating(Guid userId, Guid dishId)
     {
+        if (_context.Dishes.Find(dishId) == null)
+        {
+            throw new ObjectNotFoundException(message: $"The dish with id={dishId} is not on the menu");
+        }
+        
         var orderingDishes = _context.OrderingDishes
             .Where(x => x.DishId == dishId && x.UserId == userId)
             .Select(x => x)
@@ -94,10 +99,6 @@ public class DishService: IDishService
         }
 
         var user = _context.Users.Find(userId);
-        if (user == null)
-        {
-            throw new NullReferenceException(message: "");
-        }
 
         if (!CheckSetRating(userId, dishId))
         {

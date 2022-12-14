@@ -1,4 +1,5 @@
 using System.Data.Entity.Core;
+using System.Runtime.InteropServices;
 using webNET_Hits_backend_aspnet_project_2.Models;
 using webNET_Hits_backend_aspnet_project_2.Models.DTO;
 using webNET_Hits_backend_aspnet_project_2.Servises.InterfacesServices;
@@ -77,8 +78,7 @@ public class BasketService: IBasketService
         
         if (dishBasket.UserId != userId)
         {
-            //forbidden;
-            throw new Exception();
+            throw new ExternalException();
         }
 
         if (increase && dishBasket.Amount > 1)
