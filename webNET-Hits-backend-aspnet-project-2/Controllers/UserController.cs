@@ -29,6 +29,15 @@ public class UserController: ControllerBase
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Register([FromBody] UserRegisterModel model)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new Response
+            {
+                Status = "Error",
+                Message = "Model is incorrect"
+            });
+        }
+        
         try
         {
             var token = await _userService.RegisterUser(model);
@@ -55,6 +64,15 @@ public class UserController: ControllerBase
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Login([FromBody] LoginCredentials model)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new Response
+            {
+                Status = "Error",
+                Message = "Model is incorrect"
+            });
+        }
+        
         try
         {
             var token = await _userService.LogInUser(model);
@@ -154,6 +172,15 @@ public class UserController: ControllerBase
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> EditUserProfile([FromBody] UserEditModel model)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new Response
+            {
+                Status = "Error",
+                Message = "Model is incorrect"
+            });
+        }
+        
         try
         {
             _tokenService.CheckAccessToken(Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", ""));

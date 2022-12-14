@@ -73,6 +73,11 @@ public class OrderService: IOrderService
 
     public async Task CreatingOrderFromBasket(Guid userId, OrderCreateDto model)
     {
+        if (DateTime.Parse(model.DeliveryTime) <= DateTime.UtcNow.AddHours(1))
+        {
+            throw new BadHttpRequestException( message: "Invalid delivery time. Delivery time must be more than current datetime on 60 minutes");
+        }
+        
         var dishes = _context.BasketDishes
             .Where(x => x.UserId == userId)
             .ToList();
@@ -81,7 +86,7 @@ public class OrderService: IOrderService
         {
             throw new ObjectNotFoundException(message: $"Empty basket for user with id={userId}");
         }
-
+        
         var order = new Order
         {
             UserId = userId,

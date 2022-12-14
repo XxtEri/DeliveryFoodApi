@@ -11,6 +11,7 @@ public class UserRegisterModel
     public string FullName { get; set; }
     
     [MinLength(6)]
+    [DataType(DataType.Password)]
     [Required]
     public string Password { get; set; }
     
@@ -22,7 +23,7 @@ public class UserRegisterModel
     [MaybeNull]
     public string Address { get; set; }
 
-    [DataType(DataType.Date)]
+    [DataType(DataType.DateTime)]
     [MaybeNull]
     public string BirthDate { get; set; }
     

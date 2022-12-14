@@ -10,6 +10,7 @@ public class LoginCredentials
     public string Email { get; set; }
     
     [MinLength(1)]
+    [DataType(DataType.Password)]
     [Required]
     public string Password { get; set; }
 }

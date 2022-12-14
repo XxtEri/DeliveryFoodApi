@@ -21,5 +21,6 @@ public class DishBasketDto
     public int Amount { get; set; }
     
     [MaybeNull]
+    [Url]
     public string Image { get; set; }
 }

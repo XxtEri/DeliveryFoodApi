@@ -19,10 +19,12 @@ public class DishDto
     public double Price { get; set; }
     
     [MaybeNull]
+    [Url]
     public string Image { get; set; }
     
     public bool Vegetarian { get; set; }
     
+    [MaybeNull]
     public double? Rating { get; set; }
     
     public DishCategory Category { get; set; }

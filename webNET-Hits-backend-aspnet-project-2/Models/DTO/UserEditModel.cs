@@ -10,7 +10,7 @@ public class UserEditModel
     [Required]
     public string FullName { get; set; }
     
-    [DataType(DataType.Date)]
+    [DataType(DataType.DateTime)]
     [MaybeNull]
     public string BirthDate { get; set; }
     

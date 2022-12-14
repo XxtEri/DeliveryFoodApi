@@ -20,6 +20,11 @@ public class UserService: IUserService
 
     public async Task<TokenResponse> RegisterUser(UserRegisterModel model)
     {
+        if (model.BirthDate != null && DateTime.Parse(model.BirthDate) <= DateTime.UtcNow)
+        {
+            throw new BadHttpRequestException( message: "Invalid birthdate. Birthdate must be more than current datetime");
+        }
+        
         var identity = await GetIdentity(model.Email, model.Password);
 
         if (identity != null)
@@ -71,6 +76,11 @@ public class UserService: IUserService
     
     public async Task EditProfileUser(Guid userId, UserEditModel model)
     {
+        if (model.BirthDate != null && DateTime.Parse(model.BirthDate) <= DateTime.UtcNow)
+        {
+            throw new BadHttpRequestException( message: "Invalid birthdate. Birthdate must be more than current datetime");
+        }
+        
         var users = _context.Users
             .Where(x => x.Id == userId)
             .AsEnumerable()

@@ -123,10 +123,20 @@ public class OrderController: ControllerBase
     [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
     public IActionResult CreateOrder([FromBody] OrderCreateDto model)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new Response
+            {
+                Status = "Error",
+                Message = "Model is incorrect"
+            });
+        }
+        
         var idUser = Guid.Parse(User.Identity!.Name!);
         try
         {
-            _tokenService.CheckAccessToken(Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", ""));
+            _tokenService.CheckAccessToken(Request.Headers[HeaderNames.Authorization].ToString()
+                .Replace("Bearer ", ""));
             _orderService.CreatingOrderFromBasket(idUser, model);
             return Ok();
         }
@@ -136,6 +146,14 @@ public class OrderController: ControllerBase
             {
                 Status = "Error",
                 Message = "User is not authorized"
+            });
+        }
+        catch (BadHttpRequestException e)
+        {
+            return BadRequest(new Response
+            {
+                Status = "Error",
+                Message = e.Message
             });
         }
         catch (ObjectNotFoundException e)
